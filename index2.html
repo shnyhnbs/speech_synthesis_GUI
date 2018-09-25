@@ -17,7 +17,7 @@
   </script>
 
   <!-- Required Materialize CSS  -->
-  <script src="webdnn.js"></script>
+  <script src="./js/webdnn.js"></script>
   <!--<script src="./js/Chart.bundle.min.js"></script>-->
   <script src="./js/Rx.min.js"></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js'></script>
@@ -58,7 +58,7 @@
 
         <div id="textbox">
             <form id="form">
-                <textarea id="text">萌のブースに来てくれてありがとう</textarea>
+                <textarea id="text">こんにちは</textarea>
             </form>
         </div>
     </div>
@@ -384,6 +384,10 @@ window.onload = function(){
         }).then(()=>{
             synthesizeWav(mod_parameters);
         }).then(()=>{
+
+            //バー表示
+            displayMlf0(mod_parameters.lf0, parameters.dur, parameters.lab.plab);
+
             //GUI log
             $('#status').html("合成完了");
 

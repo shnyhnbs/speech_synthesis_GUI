@@ -414,9 +414,6 @@ function mkMflab(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
     //recLf0 + 録音音声のmdur -> rec_mlf0
     let rec_mlf0 = mora_avg(shift_recLf0i, rec_mdur);
 
-    //bar表示
-    loadMf0(rec_mlf0);
-
     //モーラごとの差分
     let diff_mlf0 = new Float32Array(syn_mlf0.length);
 

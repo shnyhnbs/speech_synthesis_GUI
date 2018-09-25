@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>TailorMadeSpeechSynthesis</title>
+
+<!--  <link href="./css/material-icons.css" rel="stylesheet"> -->
+<!--  <link rel="stylesheet" type="text/css" href="./css/materialize.min.css"> -->
+  <script>
+  // http://phiary.me/electron-jquery-script-tag-load/
+  // for electron
+  if (typeof module !== 'undefined') {
+      window.__tempModuleExports__ = module.exports;
+      module.exports = false;
+  }
+  </script>
+
+  <!-- Required Materialize CSS  -->
+  <script src="webdnn.js"></script>
+  <!--<script src="./js/Chart.bundle.min.js"></script>-->
+  <script src="./js/Rx.min.js"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js'></script>
+<!--  <script src='./js/materialize.min.js'></script> -->
+  <script src="webdnn.js"></script>
+  <script src="script.js"></script>
+  <script src="dist/bundle.js"></script>
+  <script src="./js/recorder.js"></script>
+  <script src="./js/test.js"></script>
+  <script src="./js/manual.js"></script
+
+
+  <!-- to make graph  -->
+  <script src="./js/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/heatmap.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/data.js"></script>
+  <script src="https://code.highcharts.com/modules/boost-canvas.js"></script>
+  <script src="https://code.highcharts.com/modules/boost.js"></script>
+
+  <script>
+  // for electron
+  if (window.__tempModuleExports__) {
+      module.exports = window.__tempModuleExports__;
+      window.__tempModuleExports__ = null;
+      delete window.__tempModuleExports__;
+  }
+  </script>
+</head>
+
+<body>
+    <div id="main-box">
+        <div class="file-field input-field;" style="margin: 5px 10px;" hidden> <!--非表示-->
+            <div class="btn" style="margin: 0 10px;">
+                <input type="file" name="file" id="file" style="margin: 0px;">
+            </div>
+        </div>
+
+        <div id="textbox">
+            <form id="form">
+                <textarea id="text">萌のブースに来てくれてありがとう</textarea>
+            </form>
+        </div>
+    </div>
+    <div id="sub-box">
+        <div id="graph-box">
+            <div id="manual_container">
+                <div id="lf0Bar"></div>
+            </div>
+        </div>
+        <div id="button-box">
+            <button type="submit" id="text_submit" class="waves-effect waves-light btn">合成</button>
+            <button id="play" class="waves-effect waves-light btn">再生</button>
+            <button id="mod" class="waves-effect waves-light btn">韻律制御</button>
+            <button id="save" class="waves-effect waves-light btn" onclick={DownloadWave()}>保存</button>
+            <button id="save" class="waves-effect waves-light btn" onclick={DownloadFeats()}>特徴量保存</button>
+            <button id="manual" class="waves-effect waves-light btn">manual</button>
+        </div>
+        <!-- テキスト入力 -> plab ここまで-->
+        <br>
+        <!--<div id="result"></div>-->
+        <!--<div id="status"></div>-->
+        <!--<graph></graph>-->
+
+    </div>
+    <recording></recording>
+    <div id="option-box">
+        <div class="switch">
+            <label>
+                分散補償
+                <input type="checkbox" id="vcomp">
+                <span class="lever"></span>
+            </label>
+        </div>
+
+        <div class="switch">
+            <label>
+                アクセント入力
+                <input type="checkbox" id="acc">
+                <span class="lever"></span>
+            </label>
+        </div>
+
+        <div class="switch">
+            <label>
+                継続長制御
+                <input type="checkbox" id="dur_bool">
+                <span class="lever"></span>
+            </label>
+        </div>
+    </div>
+
+</body>
+
+<script>
+const {webFrame} = require('electron');
+const Dialog = require('electron').remote.dialog;
+const fileSystem = require('fs');
+webFrame.registerURLSchemeAsPrivileged('file');
+</script>
+
+<script>
+
+window.model = {};
+window.model.scale = {};
+window.model.vars = {};
+window.model.vcomp = {};
+
+window.diff_model = {};
+window.diff_model.scale = {};
+window.diff_model.vars = {};
+
+window.vcomp_bool = false; //分散補償の継続長を使うか否か
+window.vcomp_bool_tmp = false; //一時的に分散補償の継続長を使うかのフラグ
+window.dur_bool = false; //音声入力の継続長を使うか否か
+window.mod_bool = false; //合成音声の修正を行ったか否か
+window.acc_bool = false; //アクセントで入力するか否か
+
+window.date; //特徴量出力の為の仮の名前
+
+//audiocontext
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+window.playAudio = {};
+window.playAudio.context = new AudioContext();
+
+SPTK.SPTKWeb.Initialize()
+  .then(() => {
+    console.log('Initialized');
+    // Show Modal
+  })
+  .catch(err => {
+    console.error(err);
+  });
+
+ window.parameters = {};
+ window.diff_parameters = {};
+ window.mod_parameters = {};
+ window.parameters.graphParamaters = new Rx.Subject();
+
+window.tmpdl //特徴量をDLするため、あとでけす
+
+var label;
+var input;
+var output;
+var reader;
+var feats;
+var out_buffer;
+var source;
+var rec_wav;
+var rec_wav_f32;
+
+
+
+// load flab file
+let file = document.getElementById('file');
+if (window.File && window.FileReader && window.FileList) {
+    function loadLabelFile(e) {
+        label = e.target.files[0];
+        console.log(e.target.files[0].name);
+        reader = new FileReader();
+        reader.onload = function() {
+            input = new Float32Array(reader.result);
+        }
+        reader.readAsArrayBuffer(label);
+    }
+    file.addEventListener('change', loadLabelFile, false);
+} else {
+    file.style.display = 'none';
+    result.innerHTML = 'File APIを使用することが出来ません，対応ブラウザでご確認ください．';
+}
+
+
+function loadScale(path, conv) {
+  let request = new XMLHttpRequest();
+
+  request.open('GET', path, true);
+  request.responseType = 'arraybuffer';
+
+  request.onload = function() {
+    let scale = request.response;
+    window.model.scale[conv] = new Float32Array(scale);
+  }
+
+  request.send();
+}
+
+function loadVars(path, conv) {
+  let request = new XMLHttpRequest();
+
+  request.open('GET', path, true);
+  request.responseType = 'arraybuffer';
+
+  request.onload = function() {
+    let vars = request.response;
+    window.model.vars[conv] = new Float32Array(vars);
+  }
+
+  request.send();
+}
+
+function loadVcomp(path, conv) {
+  let request = new XMLHttpRequest();
+
+  request.open('GET', path, true);
+  request.responseType = 'arraybuffer';
+
+  request.onload = function() {
+    let vcomp = request.response;
+    window.model.vcomp[conv] = new Float32Array(vcomp);
+  }
+
+  request.send();
+}
+
+function loadData(path, cate, conv) {
+  let request = new XMLHttpRequest();
+
+  request.open('GET', path, true);
+  request.responseType = 'arraybuffer';
+
+  request.onload = function() {
+    let data = request.response;
+    window.diff_model[cate][conv] = new Float32Array(data);
+  }
+
+  request.send();
+}
+
+$(document).ready(function() {
+    document.getElementById('text_submit').onclick = (function() {
+
+    if(acc_bool){
+        var qtype = 'accent';
+    }else{
+        var qtype = 'analyze_text';
+    }
+
+    //GUIにステータス表示
+    $('#status').html("合成中・・・");
+
+//    event.preventDefault();
+    var $form = $(form);
+    $.ajax({
+      url: 'http://localhost:12121/cgi-bin/query.py',
+      type: 'post',
+      dataType: 'text',
+      data: {
+        qtype: qtype,
+        text: $('#text').val()
+      },
+    })
+    .done(function(response) {
+    window.parameters.lab = JSON.parse(response);
+    console.dir(window.parameters.lab);
+    $('#result').html(window.parameters.lab.accent);
+    $('#result').html(window.parameters.lab.kana);
+    $('#accent').html(window.parameters.lab.kana);
+    calculate_dur(window.parameters.lab.plab) //text -> plab ->flab
+    .then(value=>{
+    input = mkFlab(window.parameters.lab.plab, value);
+    synthesis();
+    })
+    })
+    .fail(function() {
+      $('#result').html('Failed.');
+      $('#status').html("失敗しました");
+    });
+  });
+});
+
+
+function synthesis (){
+        window.mod_bool = false;
+        calculate_feats(input) //webdnn + unscaling
+    .then(value=>{
+        splitFeats(value);
+    }).then(()=>{
+        synthesizeWav(parameters);
+    }).then(()=>{
+        $('#status').html("合成完了");
+//        window.parameters.graphParamaters.next({is_initialize: true, data: out_buffer.wav});
+    })
+
+}
+
+//分散補償の切り替え
+$(function(){
+    $('#vcomp').click(function () {
+        if(window.vcomp_bool){
+            window.vcomp_bool = false;
+        }else{
+            window.vcomp_bool = true;
+        }
+    });
+});
+
+//継続長制御の切り替え
+$(function(){
+    $('#dur_bool').click(function () {
+        if(window.dur_bool){
+            window.dur_bool = false;
+        }else{
+            window.dur_bool = true;
+        }
+    });
+});
+
+//入力形式入れ替え
+$(function(){
+    $('#acc').click(function () {
+        if(window.acc_bool){
+            window.acc_bool = false;
+        }else{
+            window.acc_bool = true;
+        }
+    });
+});
+
+
+window.onload = function(){
+    loadScale('model/std/scale/feats.scale', 'feats'); //まとめたい
+    loadScale('model/std/scale/dur.scale', 'dur');
+    loadVars('model/std/vars-mcepd.bin', 'mcep');
+    loadVars('model/std/vars-lf0d.bin', 'lf0');
+    loadVars('model/std/vars-bapd.bin', 'bap');
+    loadVcomp('model/std/vcomp.mcep', 'mcep');
+    loadVcomp('model/std/vcomp.lf0', 'lf0');
+
+    loadData('model/diff/scale/feats.scale', 'scale', 'feats');
+    loadData('model/diff/vars-mcepd.bin', 'vars', 'mcep');
+    loadData('model/diff/vars-lf0d.bin', 'vars', 'lf0');
+    loadData('model/diff/vars-bapd.bin', 'vars', 'bap');
+
+/*    document.getElementById('syn').onclick = function (){
+        calculate_feats(input) //webdnn + unscaling
+    .then(value=>{
+        splitFeats(value);
+    }).then(()=>{
+        synthesizeWav();
+    }).then(()=>{
+//        window.parameters.graphParamaters.next({is_initialize: true, data: out_buffer.wav});
+    })
+
+    }
+*/
+    document.getElementById('play').onclick = function (){
+        source.start(0);
+    }
+
+    document.getElementById('mod').onclick = function (){
+        //GUI log
+        window.mod_bool =true;
+
+        if(window.dur_bool){
+            synthesizeWavWithUsersDuration();
+            return;
+        }
+
+        mod_parameters.mflab = mkMflab(parameters.lab.plab, input, parameters.dur, parameters.lf0, window.rec_worldParameters.f0, window.rec_worldParameters.lab.mora_dur);
+        calculate_diff(mod_parameters.mflab) //webdnn + unscaling
+        .then(value=>{
+            $('#status').html("合成中・・・");
+            splitDiff(value);
+        }).then(()=>{
+            synthesizeWav(mod_parameters);
+        }).then(()=>{
+            //GUI log
+            $('#status').html("合成完了");
+
+        })
+    }
+
+    document.getElementById('manual').onclick = function (){
+        //GUI log
+
+        let mflab = mkMflabWithManual(parameters.lab.plab, input, parameters.dur, parameters.lf0, window.rec_worldParameters.f0, window.rec_worldParameters.lab.mora_dur);
+        calculate_diff(mflab) //webdnn + unscaling
+        .then(value=>{
+            $('#status').html("合成中・・・");
+            splitDiff(value);
+        }).then(()=>{
+            synthesizeWav(mod_parameters);
+        }).then(()=>{
+            //GUI log
+            $('#status').html("合成完了");
+
+    })
+    }
+
+
+}
+
+</script>
+
+<style>
+    html{
+        height: 100%
+    }
+    body{
+        height: 100%;
+        margin: 0;
+    }
+
+    #main-box{
+        height: 40%;
+    }
+    #form{
+        height: 100%;
+    }
+    #textbox {
+        width: 70%;
+        height: 100%;
+    }
+    #text {
+        width: 100%;
+        height: 100%;
+    }
+    #sub-box{
+        height: 40%;
+        display: flex;
+    }
+    #graph-box{
+        height: 100%;
+        width: 70%;
+        align-items: center;
+    }
+    #manual_container{
+        height: 100%;
+        width:100%
+    }
+    #button-box{
+        height: 100%;
+        width: 30%;
+        display: flex;
+        flex-direction:column;
+    }
+    recording{
+        height: 10%
+    }
+    #option-box{
+        height: 10%;
+        display: flex;
+    }
+
+    #manual_container{
+        width: 100%;
+        height: 150px;
+    }
+
+    #lf0Bar {
+        width: 100%;
+        height: 150px;
+        display :flex;
+        align-items: center;
+        overflow: scroll;
+    }
+
+    #slider{
+        height: 10%;
+        margin: -50px;
+        -webkit-transform: rotate(-90deg);
+        transform: rotate(-90deg);
+    }
+
+
+</style>
+<!-- tags  -->
+<script src="./js/riot+compiler.min.js"></script>
+<script src="./tag/graph.tag" type="riot/tag"></script>
+<script src="./tag/recording.tag" type="riot/tag"></script>
+<script>riot.mount('graph')</script>
+<script>riot.mount('recording')</script>
+
+</html>

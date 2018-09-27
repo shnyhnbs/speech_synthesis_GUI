@@ -1,3 +1,5 @@
+//手修正関連
+
 
 //lf0 mdur -> lf0のモーラ平均をrangeで出力
 function displayMlf0(lf0, dur, plab){
@@ -19,7 +21,7 @@ function loadMlf0(syn_lf0){
     resetBar();
 
     for(let i = 0; i < syn_lf0.length; i++){
-        mkBar(i, syn_lf0[i], 'tmp');
+        mkBar(i, syn_lf0[i].toFixed(2), 'tmp');
     }
     return 0;
 }
@@ -29,14 +31,31 @@ function resetBar(){
 }
 
 function mkBar(num, value, mora){
-    $(  '<input type="range" id="slider"' +
-        'number=' + num +
+    $(  '<div id="slider-all">' +
+        ' <span id="slider-value">' + value + '</span>' +
+        ' <input type="range" id="slider"' +
+        ' name=' + num +
         ' mora=' + mora +
         ' value=' + value +
         ' data-default=' + value +
-        ' min="0" max="10" step="any">'
+        ' min="0" max="10" step="0.01">' +
+        ' <div>'
     ).appendTo('div#lf0Bar')
+
+    //値を表示
+    //スライダーを変更したら発火
+    document.querySelectorAll("#slider")[num].addEventListener('input', function(evt) {
+
+        let target = evt.target.name;
+        let target_value = document.querySelectorAll("#slider")[target].value;
+
+        document.querySelectorAll("#slider-value")[target].innerHTML = (target_value * 1).toFixed(2);
+
+    }, false);
+
+
 }
+
 
 function getManual(){
     let length = document.querySelectorAll("#slider").length;
@@ -110,4 +129,14 @@ function mkMflabWithManual(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
     let mflab = flab2mflab(flab, manual_mlf0, syn_mdur);
 
     return mflab;
+}
+
+window.onload = function(){
+
+    var btn = document.getElementById("lf0Bar");
+    btn.addEventListener('click', function() {
+
+        console.log('クリックされました！');
+
+    }, false);
 }

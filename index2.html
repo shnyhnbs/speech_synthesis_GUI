@@ -436,6 +436,7 @@ window.onload = function(){
         height: 100%;
     }
     #text {
+        box-sizing:border-box;
         width: 100%;
         height: 100%;
     }
@@ -479,13 +480,20 @@ window.onload = function(){
         overflow: scroll;
     }
 
-    #slider{
+    #slider-all{
         height: 10%;
         margin: -50px;
         -webkit-transform: rotate(-90deg);
         transform: rotate(-90deg);
     }
 
+    #slider-value{
+        width: 28px;
+        text-align: center;
+        display: inline-block;
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
 
 </style>
 <!-- tags  -->

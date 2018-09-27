@@ -890,3 +890,32 @@ window.addEventListener('load', function () {
     console.error('Failed to initialize', reason);
   });
 });
+
+async function synthesis (plab){
+
+    console.log(plab);
+    window.mod_bool = false;
+
+    let feats;
+
+    await calculate_dur(plab)
+    .then((value) => {new Promise(function(resolve, reject){
+                input = mkFlab(window.parameters.lab.plab, value);
+                resolve();
+            });
+    })
+    await calculate_feats(input)
+    .then((value)=>{new Promise(function(resolve, reject){
+                    splitFeats(value);
+                    resolve();
+                });
+    })
+
+    await new Promise(function(resolve, reject){
+                synthesizeWav(parameters);
+                resolve();
+            });
+
+    displayMlf0(parameters.lf0, parameters.dur, parameters.lab.plab);
+
+}

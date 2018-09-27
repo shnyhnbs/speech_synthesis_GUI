@@ -26,7 +26,7 @@
   <script src="./js/webdnn.js"></script>
   <script src="./js/script.js"></script>
   <script src="./js/recorder.js"></script>
-  <script src="./js/test.js"></script>
+  <script src="./js/my_recorder.js"></script>
   <script src="./js/manual.js"></script>
 
 
@@ -270,38 +270,11 @@ $(document).ready(function() {
       },
     })
     .done(function(response) {
-    window.parameters.lab = JSON.parse(response);
-    console.dir(window.parameters.lab);
-    $('#result').html(window.parameters.lab.accent);
-    $('#result').html(window.parameters.lab.kana);
-    $('#accent').html(window.parameters.lab.kana);
-    calculate_dur(window.parameters.lab.plab) //text -> plab ->flab
-    .then(value=>{
-    input = mkFlab(window.parameters.lab.plab, value);
-    synthesis();
+        window.parameters.lab = JSON.parse(response);
+        console.dir(window.parameters.lab);
+        synthesis(window.parameters.lab.plab);
     })
-    })
-    .fail(function() {
-      $('#result').html('Failed.');
-      $('#status').html("失敗しました");
-    });
-  });
-});
-
-
-function synthesis (){
-        window.mod_bool = false;
-        calculate_feats(input) //webdnn + unscaling
-    .then(value=>{
-        splitFeats(value);
-    }).then(()=>{
-        synthesizeWav(parameters);
-    }).then(()=>{
-        $('#status').html("合成完了");
-//        window.parameters.graphParamaters.next({is_initialize: true, data: out_buffer.wav});
-    })
-
-}
+})})
 
 //分散補償の切り替え
 $(function(){

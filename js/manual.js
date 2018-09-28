@@ -75,6 +75,41 @@ function getManual(){
     return mod_mlf0;
 }
 
+function mkMflabWithManual3(plab, flab, syn_dur, syn_mlf0){
+
+    //手修正を結果を利用
+    let tmp_manual_mlf0 = getManual();
+    let manual_mlf0 = new Float32Array(tmp_manual_mlf0.length);
+
+    let syn_mdur = mkMora_dur(plab, syn_dur);
+
+    //平均0分散1に標準化
+    for(let i = 0; i < manual_mlf0.length; i++){
+        manual_mlf0[i] = syn_mlf0[i] + tmp_manual_mlf0[i];
+    }
+    mod_parameters.mlf0 = manual_mlf0;
+
+    //flab -> mkMflab
+    let mflab = flab2mflab(flab, manual_mlf0, syn_mdur);
+
+    return mflab;
+}
+
+function mkMflabWithManual2(plab, flab, syn_dur){
+
+    //手修正を結果を利用
+    let manual_mlf0 = getManual();
+
+    mod_parameters.mlf0 = manual_mlf0;
+
+    let syn_mdur = mkMora_dur(plab, syn_dur);
+
+    //flab -> mkMflab
+    let mflab = flab2mflab(flab, manual_mlf0, syn_mdur);
+
+    return mflab;
+}
+
 function mkMflabWithManual(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
 
     //recf0 -> recLf0
@@ -115,15 +150,15 @@ function mkMflabWithManual(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
     let std_mlf0 = standardization(diff_mlf0);
     //let std_mlf0 = diff_mlf0;
 
-
     //手修正を結果を利用
-
     let manual_mlf0 = new Float32Array(std_mlf0.length);
     let tmp_manual_mlf0 = getManual();
 
     for(let i = 0; i < std_mlf0.length; i++){
         manual_mlf0[i] = std_mlf0[i] + tmp_manual_mlf0[i];
     }
+
+    mod_parameters.mlf0 = manual_mlf0;
 
     //flab -> mkMflab
     let mflab = flab2mflab(flab, manual_mlf0, syn_mdur);

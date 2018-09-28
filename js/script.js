@@ -423,8 +423,9 @@ function mkMflab(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
 
     //平均0分散1に標準化
     let std_mlf0 = standardization(diff_mlf0);
-
     //let std_mlf0 = diff_mlf0;
+
+    mod_parameters.mlf0 = std_mlf0;
 
     //flab -> mkMflab
     let mflab = flab2mflab(flab, std_mlf0, syn_mdur);
@@ -760,7 +761,7 @@ function DownloadFeats (){
 
     SetDate();
 
-    if(mod_bool){
+    if(speech_bool){
         Save(mod_parameters.lf0, 'lf0', window.date);
         Save(mod_parameters.mcep, 'mcep', window.date);
         Save(mod_parameters.bap, 'bap', window.date);
@@ -893,8 +894,8 @@ window.addEventListener('load', function () {
 
 async function synthesis (plab){
 
-    console.log(plab);
-    window.mod_bool = false;
+    window.speech_bool = false;
+    window.manual_bool = false;
 
     let feats;
 

@@ -133,7 +133,8 @@ window.diff_model.vars = {};
 window.vcomp_bool = false; //分散補償の継続長を使うか否か
 window.vcomp_bool_tmp = false; //一時的に分散補償の継続長を使うかのフラグ
 window.dur_bool = false; //音声入力の継続長を使うか否か
-window.mod_bool = false; //合成音声の修正を行ったか否か
+window.speech_bool = false; //合成音声の修正を行ったか否か
+window.manual_bool = false; //手修正を行ったか否か
 window.acc_bool = false; //アクセントで入力するか否か
 
 window.date; //特徴量出力の為の仮の名前
@@ -347,9 +348,12 @@ window.onload = function(){
         source.start(0);
     }
 
+
+
     document.getElementById('mod').onclick = function (){
         //GUI log
-        window.mod_bool =true;
+        window.speech_bool =true;
+        window.manual_bool =false;
 
         if(window.dur_bool){
             synthesizeWavWithUsersDuration();
@@ -375,7 +379,36 @@ window.onload = function(){
     }
 
     document.getElementById('manual').onclick = function (){
-        //GUI log
+
+        let mflab;
+
+        if(manual_bool){
+            mflab = mkMflabWithManual3(parameters.lab.plab, input, parameters.dur, mod_parameters.mlf0);
+        }
+        else if(speech_bool){//音声入力で修正した音声か否か
+            manual_bool = true;
+            mflab = mkMflabWithManual(parameters.lab.plab, input, parameters.dur, parameters.lf0, window.rec_worldParameters.f0, window.rec_worldParameters.lab.mora_dur);
+        }
+        else{
+            manual_bool = true;
+            mflab = mkMflabWithManual2(parameters.lab.plab, input, parameters.dur);
+        }
+
+        calculate_diff(mflab) //webdnn + unscaling
+        .then(value=>{
+            $('#status').html("合成中・・・");
+            splitDiff(value);
+        }).then(()=>{
+            synthesizeWav(mod_parameters);
+        }).then(()=>{
+            displayMlf0(mod_parameters.lf0, parameters.dur, parameters.lab.plab);
+            //GUI log
+            $('#status').html("合成完了");
+        })
+    }
+
+/*
+    document.getElementById('manual').onclick = function (){
 
         let mflab = mkMflabWithManual(parameters.lab.plab, input, parameters.dur, parameters.lf0, window.rec_worldParameters.f0, window.rec_worldParameters.lab.mora_dur);
         calculate_diff(mflab) //webdnn + unscaling
@@ -390,11 +423,10 @@ window.onload = function(){
 
             //GUI log
             $('#status').html("合成完了");
+        })
 
-    })
     }
-
-
+*/
 }
 
 </script>
@@ -466,6 +498,7 @@ window.onload = function(){
     #slider-all{
         height: 10%;
         margin: -50px;
+        display: flex;
         -webkit-transform: rotate(-90deg);
         transform: rotate(-90deg);
     }

@@ -189,6 +189,13 @@ if (window.File && window.FileReader && window.FileList) {
     result.innerHTML = 'File APIを使用することが出来ません，対応ブラウザでご確認ください．';
 }
 
+//promiseを宣言
+function promise(x){
+    new Promise(function(resolve,reject){
+        x();
+        resolve();
+    })
+}
 
 function loadScale(path, conv) {
   let request = new XMLHttpRequest();
@@ -378,6 +385,9 @@ window.onload = function(){
         }).then(()=>{
             synthesizeWav(mod_parameters);
         }).then(()=>{
+
+            displayMlf0(mod_parameters.lf0, parameters.dur, parameters.lab.plab);
+
             //GUI log
             $('#status').html("合成完了");
 

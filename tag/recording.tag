@@ -7,12 +7,12 @@
                 <input type="button" id="rec" value="録音開始" style="font-size: 1.2em;color: #028760;position: center;">
                 </div>
                 <div>
-                    <button class="waves-effect waves-light btn" id="analyze">分析</button>
 
+                    <!--    <button class="waves-effect waves-light btn" id="analyze">分析</button> -->
                     <!--    <button class="waves-effect waves-light btn" id="rec_syn">合成</button> -->
                     <!--    <button class="waves-effect waves-light btn" onclick="play()">音声確認</button> -->
-
-                    <button class="waves-effect waves-light btn" id="rec_submit">送信</button>
+                    <!--    <button class="waves-effect waves-light btn" id="rec_submit">送信</button> -->
+                    <button class="waves-effect waves-light btn" id="analyzeAll">分析</button>
                     <input type="file" name="file" id="rec_file" style="margin: 0px;">
 
                         <h3></h3>
@@ -98,10 +98,10 @@ this.on('mount', () => {
 
 jQuery('#click').on('click', "#rec", function() {
     if (this.value === "録音開始") {
-        jQuery('#rec').replaceWith('<input type="button" id="rec" value="録音停止" style="font-size: 1.2em;color: #D30E1B;">');
+        jQuery('#rec').replaceWith('<input type="button" id="rec" value="録音停止" style="color: #D30E1B;">');
         record();
     } else {
-        jQuery('#rec').replaceWith('<input type="button" id="rec" value="録音開始" style="font-size: 1.2em;color: #028760;">');
+        jQuery('#rec').replaceWith('<input type="button" id="rec" value="録音開始" style="color: #028760;">');
         stop();
     }
 });
@@ -110,13 +110,22 @@ jQuery('#click').on('click', "#rec", function() {
 //        rec_synthesizeWav(rec_worldParameters);
 //    }
 
-    document.getElementById('analyze').onclick = function (){
-            analyze();
+//    document.getElementById('analyze').onclick = function (){
+//            analyze();
+//    };
+
+//    document.getElementById('rec_submit').onclick = function (){
+//            rec_submit();
+//    };
+
+    document.getElementById('analyzeAll').onclick = function (){
+            analyzeAll();
     };
 
-    document.getElementById('rec_submit').onclick = function (){
-            rec_submit();
-    };
+async function analyzeAll(){
+    await promise(analyze);
+    await promise(rec_submit);
+}
 
     //録音ファイルを選択して韻律制御
 

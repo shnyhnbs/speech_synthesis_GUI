@@ -38,7 +38,7 @@ function mkBar(num, value, mora){
         ' mora=' + mora +
         ' value=' + value +
         ' data-default=' + value +
-        ' min="0" max="10" step="0.01">' +
+        ' min="5" max="8" step="0.01">' +
         ' <div>'
     ).appendTo('div#lf0Bar')
 
@@ -129,14 +129,4 @@ function mkMflabWithManual(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
     let mflab = flab2mflab(flab, manual_mlf0, syn_mdur);
 
     return mflab;
-}
-
-window.onload = function(){
-
-    var btn = document.getElementById("lf0Bar");
-    btn.addEventListener('click', function() {
-
-        console.log('クリックされました！');
-
-    }, false);
 }

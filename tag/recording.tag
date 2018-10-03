@@ -7,7 +7,6 @@
                 <input type="button" id="rec" value="録音開始" style="font-size: 1.2em;color: #028760;position: center;">
                 </div>
                 <div>
-
                     <!--    <button class="waves-effect waves-light btn" id="analyze">分析</button> -->
                     <!--    <button class="waves-effect waves-light btn" id="rec_syn">合成</button> -->
                     <!--    <button class="waves-effect waves-light btn" onclick="play()">音声確認</button> -->
@@ -24,6 +23,7 @@
 <script>
 
 var reader;
+var rec_array;
 
 window.recorder;
 window.rec_flag;
@@ -64,18 +64,14 @@ function rec_submit(){
 
 //rec_flag == true ? use rec_wav : use file;
 //buffer(バイナリ)で渡す
-function analyze(){
+async function analyze(){
     if(window.rec_flag){
-        let output = recorder && recorder.exportWAV(function(array) {
-            analyzeWav(array.buffer);
-            recorder && recorder.clear();
+        analyzeWav(rec_array.buffer);
+        return 'analyze finished';
 
-            return 'analyze finished';
-
-        });
     }else{
-        analyzeWav(reader.result);
 
+        analyzeWav(reader.result);;
         return 'analyze finished';
     }
 
@@ -103,6 +99,11 @@ jQuery('#click').on('click', "#rec", function() {
     } else {
         jQuery('#rec').replaceWith('<input type="button" id="rec" value="録音開始" style="color: #028760;">');
         stop();
+
+        recorder && recorder.exportWAV(function(array) {
+            rec_array = array;
+        });
+
     }
 });
 
@@ -111,16 +112,16 @@ jQuery('#click').on('click', "#rec", function() {
 //    }
 
 //    document.getElementById('analyze').onclick = function (){
-//            analyze();
-//    };
+//        analyze();
+//    }
 
 //    document.getElementById('rec_submit').onclick = function (){
 //            rec_submit();
 //    };
 
-    document.getElementById('analyzeAll').onclick = function (){
-            analyzeAll();
-    };
+document.getElementById('analyzeAll').onclick = function (){
+    analyzeAll();
+};
 
 async function analyzeAll(){
     await promise(analyze);

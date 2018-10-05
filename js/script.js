@@ -228,6 +228,10 @@ function splitFeats(feats){
         parameters.mcep = SPTK.SPTKWeb.SPTK_mlpg(mcepv, mcep_dim);
         parameters.bap = SPTK.SPTKWeb.SPTK_mlpg(bapv, bap_dim);
 
+        //もっといい方法を考える
+        parameters.mcep_original = SPTK.SPTKWeb.SPTK_mlpg(mcepv, mcep_dim);
+
+
         if(vcomp_bool){
             parameters.mcep = vcomp(window.parameters.mcep, 40, window.model.vcomp.mcep);
         //    parameters.lf0i = vcomp(window.parameters.lf0i, 1, window.model.vcomp.lf0);
@@ -287,7 +291,7 @@ function addDiffFeats(){
     let bap = new Float32Array(diff_parameters.bap.length);
 
     for(let i = 0; i < mcep.length; i++){
-        mcep[i] = parameters.mcep[i] + diff_parameters.mcep[i];
+        mcep[i] = parameters.mcep_original[i] + diff_parameters.mcep[i];
     }
 
     for(let i = 0; i < lf0i.length; i++){
@@ -918,5 +922,6 @@ async function synthesis (plab){
             });
 
     displayMlf0(parameters.lf0, parameters.dur, parameters.lab.plab);
+    displayLF0(parameters.lf0);
 
 }

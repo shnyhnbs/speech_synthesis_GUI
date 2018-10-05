@@ -7,6 +7,7 @@
 
 <!--  <link href="./css/material-icons.css" rel="stylesheet"> -->
 <!--  <link rel="stylesheet" type="text/css" href="./css/materialize.min.css"> -->
+  <link rel="stylesheet" type="text/css" href="css/main.css">
   <script>
   // http://phiary.me/electron-jquery-script-tag-load/
   // for electron
@@ -28,7 +29,7 @@
   <script src="./js/recorder.js"></script>
   <script src="./js/my_recorder.js"></script>
   <script src="./js/manual.js"></script>
-
+  <script src="./js/graph.js"></script>
 
   <!-- to make graph  -->
   <script src="./js/highcharts.js"></script>
@@ -64,6 +65,7 @@
     </div>
     <div id="sub-box">
         <div id="graph-box">
+            <div  id="graph_container"></div>
             <div id="manual_container">
                 <div id="lf0Bar"></div>
             </div>
@@ -80,7 +82,6 @@
         <br>
         <!--<div id="result"></div>-->
         <!--<div id="status"></div>-->
-        <!--<graph></graph>-->
 
     </div>
     <recording></recording>
@@ -281,6 +282,7 @@ $(document).ready(function() {
         window.parameters.lab = JSON.parse(response);
         console.dir(window.parameters.lab);
         synthesis(window.parameters.lab.plab);
+        //window.parameters.graphParamaters.next({is_initialize: true, data: parameters.lf0});
     })
 })})
 
@@ -431,92 +433,9 @@ window.onload = function(){
 
 </script>
 
-<style>
-    html{
-        height: 100%
-    }
-    body{
-        height: 100%;
-        margin: 0;
-    }
-
-    #main-box{
-        height: 40%;
-    }
-    #form{
-        height: 100%;
-    }
-    #textbox {
-        width: 70%;
-        height: 100%;
-    }
-    #text {
-        box-sizing:border-box;
-        width: 100%;
-        height: 100%;
-    }
-    #sub-box{
-        height: 40%;
-        display: flex;
-    }
-    #graph-box{
-        height: 100%;
-        width: 70%;
-        align-items: center;
-    }
-    #manual_container{
-        height: 100%;
-        width:100%
-    }
-    #button-box{
-        height: 100%;
-        width: 30%;
-        display: flex;
-        flex-direction:column;
-    }
-    recording{
-        height: 10%
-    }
-    #option-box{
-        height: 10%;
-        display: flex;
-    }
-
-    #manual_container{
-        width: 100%;
-        height: 150px;
-    }
-
-    #lf0Bar {
-        width: 100%;
-        height: 150px;
-        display :flex;
-        align-items: center;
-        overflow: scroll;
-    }
-
-    #slider-all{
-        height: 10%;
-        margin: -50px;
-        display: flex;
-        -webkit-transform: rotate(-90deg);
-        transform: rotate(-90deg);
-    }
-
-    #slider-value{
-        width: 28px;
-        text-align: center;
-        display: inline-block;
-        -webkit-transform: rotate(90deg);
-        transform: rotate(90deg);
-    }
-
-</style>
 <!-- tags  -->
 <script src="./js/riot+compiler.min.js"></script>
-<script src="./tag/graph.tag" type="riot/tag"></script>
 <script src="./tag/recording.tag" type="riot/tag"></script>
-<script>riot.mount('graph')</script>
 <script>riot.mount('recording')</script>
 
 </html>

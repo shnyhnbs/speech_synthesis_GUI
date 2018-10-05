@@ -1,0 +1,87 @@
+    html{
+        height: 100%
+    }
+    body{
+        height: 100%;
+        margin: 0;
+    }
+
+    #main-box{
+        height: 45%;
+    }
+    #form{
+        height: 100%;
+    }
+
+    #textbox {
+        width: 70%;
+        height: 100%;
+    }
+    #text {
+        box-sizing:border-box;
+        width: 100%;
+        height: 100%;
+        font-size: 3em;
+    }
+    #sub-box{
+        height: 45%;
+        display: flex;
+    }
+    #graph-box{
+        height: 100%;
+        width: 70%;
+        align-items: center;
+    }
+    #manual_container{
+        height: 100%;
+        width:100%
+    }
+    #button-box{
+        height: 100%;
+        width: 30%;
+        display: flex;
+        flex-direction:column;
+    }
+
+    #option-box{
+        height: 5%;
+        display: flex;
+    }
+
+    #graph_container{
+        width: 100%;
+        height: 50%;
+    }
+
+    #manual_container{
+        width: 100%;
+        height: 50%;
+    }
+
+    #lf0Bar {
+        width: 100%;
+        height: 150px;
+        display :flex;
+        align-items: center;
+        overflow: scroll;
+    }
+
+    #slider-all{
+        height: 10%;
+        margin: -50px;
+        display: flex;
+        -webkit-transform: rotate(-90deg);
+        transform: rotate(-90deg);
+    }
+
+    #slider-value{
+        width: 28px;
+        text-align: center;
+        display: inline-block;
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+
+    #rec-main-box{
+        height: 5%;
+    }

@@ -1,6 +1,4 @@
-
-var lf0a;
-
+/*
     function displaySP(){
     console.log("displaySP")
   //make Multi-dimensional array
@@ -111,9 +109,9 @@ let displayWAVE = () => {
   Highcharts.chart('container', {
     chart: {
       zoomType: 'x',
-      marginTop: 60,
-      marginBottom: 60,
-      marginLeft:100
+      marginTop: 10,
+      marginBottom: 10,
+      marginLeft:10
     },
     xAxis:{
         gridLineWidth: 1,
@@ -164,19 +162,26 @@ let displayWAVE = () => {
   });
 }
 
-let displayLF0 = (f0) => {
-    let lf0 = new Array(f0.length);
+*/
+let displayLF0 = (lf0) => {
 
-    for(let i = 0; i < f0.length; i++){
-        lf0[i] = f0[i] > 0 ? Math.log(f0[i]) : -1e+10;
+    //get max and min
+    let max = 0;
+    let min = 10;
+
+    for(let i = 0; i < lf0.length; i++){
+        max = lf0[i] > max ? lf0[i] : max;
+        min = ( lf0[i] >0 && lf0[i] < min) ? lf0[i] : min;
     }
+    console.log(min,max);
 
-  Highcharts.chart('container', {
+
+  Highcharts.chart('graph_container', {
     chart: {
       zoomType: 'x',
-      marginTop: 60,
+      marginTop: 30,
       marginBottom: 60,
-      marginLeft:100
+      marginLeft:60
     },
     xAxis:{
         gridLineWidth: 1,
@@ -202,8 +207,8 @@ let displayLF0 = (f0) => {
       }
     },
     yAxis:{
-        max:6,
-        min:4,
+        max:max,
+        min:min,
       title:{
         text:''
     },
@@ -223,27 +228,12 @@ let displayLF0 = (f0) => {
       name: 'wave',
       data: lf0,
       type: 'spline'
-    }]
+    }],
+    exporting:{
+      enabled: false,
+    },
+    credits: {
+        enabled: false
+    }
   });
 }
-
-
-this.on('mount', () => {
-
-    window.parameters.graphParamaters.subscribe(
-    (value) => {
-        if (!value.is_initialize) return;
-        lf0a = value.data;
-        console.dir(lf0a);
-
-    });
-
-    document.getElementById('sp').onclick = function (){
-        console.log('clicked');
-        console.dir(lf0a);
-        displayLF0(input);
-    }
-});
-
-</script>
-</graph>

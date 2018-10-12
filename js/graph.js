@@ -163,11 +163,18 @@ let displayWAVE = () => {
 }
 
 */
-let displayLF0 = (lf0) => {
+
+var pre_lf0 //一つ前のlf0
+
+function displayLF0(lf0){
+
+    if(manual_bool == false && speech_bool == false){
+        pre_lf0 = null;
+    }
 
     //get max and min
-    let max = 0;
-    let min = 10;
+    let max = 7;
+    let min = 5;
 
     for(let i = 0; i < lf0.length; i++){
         max = lf0[i] > max ? lf0[i] : max;
@@ -226,8 +233,15 @@ let displayLF0 = (lf0) => {
     },
     series: [{
       name: 'wave',
+      data: pre_lf0,
+      type: 'spline',
+      color: 'rgba(0,0,255,1)'
+    },
+    {
+      name: 'wave',
       data: lf0,
-      type: 'spline'
+      type: 'spline',
+      color: 'rgba(255,0,0,1)'
     }],
     exporting:{
       enabled: false,
@@ -236,4 +250,6 @@ let displayLF0 = (lf0) => {
         enabled: false
     }
   });
+
+  pre_lf0 = lf0;
 }

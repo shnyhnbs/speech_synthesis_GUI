@@ -921,7 +921,8 @@ async function synthesis (plab){
                 resolve();
             });
 
-    displayMlf0(parameters.lf0, parameters.dur, parameters.lab.plab);
+    //displayMlf0(parameters.lf0, parameters.dur, parameters.lab.plab);
+    displayFlatMlf0(parameters.dur, parameters.lab.plab);
     displayLF0(parameters.lf0);
 
 }

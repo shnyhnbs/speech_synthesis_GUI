@@ -17,11 +17,24 @@ function displayMlf0(lf0, dur, plab){
     return 0;
 }
 
-function loadMlf0(syn_lf0){
+//lf0 mdur -> lf0のモーラ平均をrangeで出力
+function displayFlatMlf0(dur, plab){
+
+    //モーラ平均を求める
+    let mdur = mkMora_dur(plab, dur);
+    let mlf0 = new Float32Array(mdur.length);
+
+    //バー表示
+    loadMlf0(mlf0);
+
+    return 0;
+}
+
+function loadMlf0(syn_mlf0){
     resetBar();
 
-    for(let i = 0; i < syn_lf0.length; i++){
-        mkBar(i, syn_lf0[i].toFixed(2), 'tmp');
+    for(let i = 0; i < syn_mlf0.length; i++){
+        mkBar(i, syn_mlf0[i].toFixed(2), 'tmp');
     }
     return 0;
 }
@@ -30,6 +43,34 @@ function resetBar(){
     $('#lf0Bar').empty();
 }
 
+function mkBar(num, value, mora){
+    $(  '<div id="slider-all">' +
+        ' <span id="slider-value">' + value + '</span>' +
+        ' <input type="range" id="slider"' +
+        ' name=' + num +
+        ' mora=' + mora +
+        ' value=' + value +
+        ' data-default=' + value +
+        ' min="-5" max="5" step="0.01">' +
+        ' <div>'
+    ).appendTo('div#lf0Bar')
+
+    //値を表示
+    //スライダーを変更したら発火
+    document.querySelectorAll("#slider")[num].addEventListener('input', function(evt) {
+
+        let target = evt.target.name;
+        let target_value = document.querySelectorAll("#slider")[target].value;
+
+        document.querySelectorAll("#slider-value")[target].innerHTML = (target_value * 1).toFixed(2);
+
+    }, false);
+
+
+}
+
+
+/*
 function mkBar(num, value, mora){
     $(  '<div id="slider-all">' +
         ' <span id="slider-value">' + value + '</span>' +
@@ -55,21 +96,21 @@ function mkBar(num, value, mora){
 
 
 }
-
+*/
 
 function getManual(){
     let length = document.querySelectorAll("#slider").length;
     let mod_mlf0 = new Float32Array(length);
 
     //値を直接出力
-    //for(let i = 0; i < length; i++){
-    //    mod_mlf0[i] = document.querySelectorAll("#slider")[i].value;
-    //}
+    for(let i = 0; i < length; i++){
+        mod_mlf0[i] = document.querySelectorAll("#slider")[i].value;
+    }
 
     //初期値との差分を出力
-    for(let i = 0; i < length; i++){
-        mod_mlf0[i] = document.querySelectorAll("#slider")[i].value - document.querySelectorAll("#slider")[i].dataset.default;
-    }
+//    for(let i = 0; i < length; i++){
+//        mod_mlf0[i] = document.querySelectorAll("#slider")[i].value - document.querySelectorAll("#slider")[i].dataset.default;
+//    }
 
     console.log(mod_mlf0);
     return mod_mlf0;

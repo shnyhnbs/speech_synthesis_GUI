@@ -372,7 +372,9 @@ window.onload = function(){
         }).then(()=>{
 
             //バー表示
-            displayMlf0(mod_parameters.lf0, parameters.dur, parameters.lab.plab);
+            //displayMlf0(mod_parameters.lf0, parameters.dur, parameters.lab.plab);
+            loadMlf0(mod_parameters.mlf0);
+            displayLF0(mod_parameters.lf0);
 
             //GUI log
             $('#status').html("合成完了");
@@ -384,6 +386,10 @@ window.onload = function(){
 
         let mflab;
 
+        manual_bool = true;
+        mflab = mkMflabWithManual2(parameters.lab.plab, input, parameters.dur);
+
+/*
         if(manual_bool){
             mflab = mkMflabWithManual3(parameters.lab.plab, input, parameters.dur, mod_parameters.mlf0);
         }
@@ -395,7 +401,7 @@ window.onload = function(){
             manual_bool = true;
             mflab = mkMflabWithManual2(parameters.lab.plab, input, parameters.dur);
         }
-
+*/
         calculate_diff(mflab) //webdnn + unscaling
         .then(value=>{
             $('#status').html("合成中・・・");
@@ -403,7 +409,9 @@ window.onload = function(){
         }).then(()=>{
             synthesizeWav(mod_parameters);
         }).then(()=>{
-            displayMlf0(mod_parameters.lf0, parameters.dur, parameters.lab.plab);
+        //    displayMlf0(mod_parameters.lf0, parameters.dur, parameters.lab.plab);
+        displayLF0(mod_parameters.lf0);
+
             //GUI log
             $('#status').html("合成完了");
         })

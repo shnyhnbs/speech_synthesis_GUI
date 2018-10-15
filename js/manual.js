@@ -1,6 +1,5 @@
 //手修正関連
 
-
 //lf0 mdur -> lf0のモーラ平均をrangeで出力
 function displayMlf0(lf0, dur, plab){
 

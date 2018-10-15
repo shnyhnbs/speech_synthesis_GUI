@@ -374,7 +374,7 @@ window.onload = function(){
             //バー表示
             //displayMlf0(mod_parameters.lf0, parameters.dur, parameters.lab.plab);
             loadMlf0(mod_parameters.mlf0);
-            displayLF0(mod_parameters.lf0);
+            displayLF0(mod_parameters.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
 
             //GUI log
             $('#status').html("合成完了");
@@ -410,7 +410,7 @@ window.onload = function(){
             synthesizeWav(mod_parameters);
         }).then(()=>{
         //    displayMlf0(mod_parameters.lf0, parameters.dur, parameters.lab.plab);
-        displayLF0(mod_parameters.lf0);
+        displayLF0(mod_parameters.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
 
             //GUI log
             $('#status').html("合成完了");

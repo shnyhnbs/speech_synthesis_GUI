@@ -166,7 +166,7 @@ let displayWAVE = () => {
 
 var pre_lf0 //一つ前のlf0
 
-function displayLF0(lf0){
+function displayLF0(lf0, mdur, mora){
 
     if(manual_bool == false && speech_bool == false){
         pre_lf0 = null;
@@ -182,8 +182,7 @@ function displayLF0(lf0){
     }
     console.log(min,max);
 
-
-  Highcharts.chart('graph_container', {
+    window.options = {
     chart: {
       zoomType: 'x',
       marginTop: 30,
@@ -192,26 +191,32 @@ function displayLF0(lf0){
     },
     xAxis:{
         gridLineWidth: 1,
-      title:{
-      text: 'time [s]',
-      style: {
-          fontSize: '18px'
-      }
-    },
-      tickInterval: 200, //worldParameters.fs/2,
-      labels: { //目盛りの数値の設定
-        formatter: function () {
-            if(this.value == 0){
-                return 0;
+        title:{
+            text: 'time [s]',
+            style: {
+                fontSize: '18px'
             }
-            //return Highcharts.numberFormat(this.value / worldParameters.fs, 1, '.', ',');
-            return Highcharts.numberFormat( this.value / 200, 1, '.', ',');
+        },
+        plotBands:[{
+            from:100,
+            to:200,
+            color:'#00FF00'
+        }],
 
-    },
-    style: {
-        fontSize: '18px'
-    }
-      }
+        tickInterval: 200, //worldParameters.fs/2,
+        gridLineWidth: 0, //目盛りの線を非表示
+        labels: { //目盛りの数値の設定
+            formatter: function () {
+                if(this.value == 0){
+                    return 0;
+                }
+                //return Highcharts.numberFormat(this.value / worldParameters.fs, 1, '.', ',');
+                return Highcharts.numberFormat( this.value / 200, 1, '.', ',');
+            },
+            style: {
+                fontSize: '18px'
+            }
+        }
     },
     yAxis:{
         max:max,
@@ -249,7 +254,24 @@ function displayLF0(lf0){
     credits: {
         enabled: false
     }
-  });
+  };
+
+  let currnt_frame = 0
+
+  for (let i = 0; i < mdur.length; i++){
+      options.xAxis.plotBands.push({
+          from: currnt_frame,
+          to: currnt_frame + mdur[i],
+          color: i % 2 == 0 ? '#FFFFFF' : '#E0E0E0',
+          label: {
+              text: mora[i]
+          }
+      })
+      currnt_frame = currnt_frame + mdur[i];
+  }
+
+  window.lf0_graph = Highcharts.chart('graph_container',options);
 
   pre_lf0 = lf0;
+
 }

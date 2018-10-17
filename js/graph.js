@@ -187,7 +187,6 @@ function displayLF0(lf0, mdur, mora){
       zoomType: 'x',
       marginTop: 30,
       marginBottom: 60,
-      marginLeft:60
     },
     xAxis:{
         gridLineWidth: 1,
@@ -248,6 +247,9 @@ function displayLF0(lf0, mdur, mora){
       type: 'spline',
       color: 'rgba(255,0,0,1)'
     }],
+    tooltip:{
+        enabled: false
+    },
     exporting:{
       enabled: false,
     },
@@ -264,7 +266,8 @@ function displayLF0(lf0, mdur, mora){
           to: currnt_frame + mdur[i],
           color: i % 2 == 0 ? '#FFFFFF' : '#E0E0E0',
           label: {
-              text: mora[i]
+              text: mora[i],
+              y:    -5
           }
       })
       currnt_frame = currnt_frame + mdur[i];

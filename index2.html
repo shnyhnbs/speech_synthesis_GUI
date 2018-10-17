@@ -30,6 +30,7 @@
   <script src="./js/my_recorder.js"></script>
   <script src="./js/manual.js"></script>
   <script src="./js/graph.js"></script>
+  <script src="./js/syn_history.js"></script>
 
   <!-- to make graph  -->
   <script src="./js/highcharts.js"></script>
@@ -62,14 +63,7 @@
                 <textarea id="text">こんにちは</textarea>
             </form>
         </div>
-    </div>
-    <div id="sub-box">
-        <div id="graph-box">
-            <div  id="graph_container"></div>
-            <div id="manual_container">
-                <div id="lf0Bar"></div>
-            </div>
-        </div>
+
         <div id="button-box">
             <button type="submit" id="text_submit" class="waves-effect waves-light btn">合成</button>
             <button id="play" class="waves-effect waves-light btn">再生</button>
@@ -78,10 +72,19 @@
             <button id="save" class="waves-effect waves-light btn" onclick={DownloadFeats()}>特徴量保存</button>
             <button id="manual" class="waves-effect waves-light btn">manual</button>
         </div>
-        <!-- テキスト入力 -> plab ここまで-->
-        <br>
-        <!--<div id="result"></div>-->
-        <!--<div id="status"></div>-->
+
+    </div>
+    <div id="sub-box">
+        <div id="graph-box">
+            <div  id="graph_container"></div>
+            <div id="manual_container">
+                <div id="lf0Bar"></div>
+            </div>
+        </div>
+
+        <div id="history-box">
+            <button id="test" class="waves-effect waves-light btn">aaa</button>
+        </div>
 
     </div>
     <recording></recording>
@@ -138,12 +141,21 @@ window.speech_bool = false; //合成音声の修正を行ったか否か
 window.manual_bool = false; //手修正を行ったか否か
 window.acc_bool = false; //アクセントで入力するか否か
 
+//logを表示するため
+window.syn_history = {};
+window.syn_history.wav = [];
+window.syn_history.lf0 = [];
+
 window.date; //特徴量出力の為の仮の名前
 
 //audiocontext
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 window.playAudio = {};
 window.playAudio.context = new AudioContext();
+window.playAudio.history = new AudioContext();
+
+hst_source = window.playAudio.history.createBufferSource();
+
 
 SPTK.SPTKWeb.Initialize()
   .then(() => {
@@ -416,6 +428,11 @@ window.onload = function(){
             $('#status').html("合成完了");
         })
     }
+
+    document.getElementById('test').onclick = function (){
+        playHistory();
+    }
+
 
 /*
     document.getElementById('manual').onclick = function (){

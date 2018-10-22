@@ -1,3 +1,140 @@
+
+
+//lf0はlf0の2次元配列
+function displayLF0(lf0, mdur, mora){
+
+    if(manual_bool == false && speech_bool == false){
+        pre_lf0 = null;
+    }
+
+    //get max and min
+    let max = 7;
+    let min = 5;
+
+    for(let i = 0; i < lf0.length; i++){
+        max = lf0[i] > max ? lf0[i] : max;
+        min = ( lf0[i] >0 && lf0[i] < min) ? lf0[i] : min;
+    }
+    console.log(min,max);
+
+    window.options = {
+    chart: {
+      zoomType: 'x',
+      marginTop: 30,
+      marginBottom: 60,
+      marginLeft: 0,
+      marginRight: 0,
+    },
+    xAxis:{
+        gridLineWidth: 1,
+        min:0,
+        title:{
+            text: 'time [s]',
+            style: {
+                fontSize: '18px'
+            }
+        },
+        plotBands:[{
+            from:100,
+            to:200,
+            color:'#00FF00'
+        }],
+
+        tickInterval: 200, //worldParameters.fs/2,
+        gridLineWidth: 0, //目盛りの線を非表示
+        labels: { //目盛りの数値の設定
+            formatter: function () {
+                if(this.value == 0){
+                    return 0;
+                }
+                //return Highcharts.numberFormat(this.value / worldParameters.fs, 1, '.', ',');
+                return Highcharts.numberFormat( this.value / 200, 1, '.', ',');
+            },
+            style: {
+                fontSize: '18px'
+            }
+        }
+    },
+    yAxis:{
+        max:max,
+        min:min,
+        title:{
+            text:''
+        },
+        labels:{
+            style: {
+                fontSize: '18px'
+            },
+            align: 'left',
+            x: 2,
+            y: -2
+        }
+    },
+    title: {
+      text: ''
+    },
+    legend: {
+      enabled: false,
+    },
+    tooltip:{
+        enabled: false
+    },
+    exporting:{
+      enabled: false,
+    },
+    credits: {
+        enabled: false
+    }
+};
+
+
+    options.xAxis.max = mdur.reduce((a,x) => a+=x,0);
+
+    options.series = [];
+    for(let i = lf0.length - 1; i >= 0; i--){//後ろから表示
+        options.series.unshift({
+            name: 'lf0-' + i,
+            data: lf0[i],
+            type: 'spline',
+            visible:i >= lf0.length - 2 ? true : false,
+            color:  i == lf0.length - 1 ? '#e74c3c' : //赤
+                    i == lf0.length - 2 ? '#3498db' : //青
+                    i == lf0.length - 3 ? '#f1c40f' : //黄色
+                    i == lf0.length - 4 ? '#2ecc71' : '#9b59b6' //緑 : 紫
+        });
+    }
+
+  //labelを表示
+  let currnt_frame = 0
+
+  for (let i = 0; i < mdur.length; i++){
+      options.xAxis.plotBands.push({
+          from: currnt_frame,
+          to: currnt_frame + mdur[i],
+          color: i % 2 == 0 ? '#FFFFFF' : '#E0E0E0',
+          label: {
+              text: mora[i],
+              y:    -5
+          }
+      })
+      currnt_frame = currnt_frame + mdur[i];
+  }
+
+  window.lf0_graph = Highcharts.chart('graph_container',options);
+
+}
+
+function switchVisible(num){
+
+    if(options.series[num].visible){
+        options.series[num].visible = false;
+    }else{
+        options.series[num].visible = true;
+    }
+    window.lf0_graph = Highcharts.chart('graph_container',options); //再表示
+
+}
+
 /*
     function displaySP(){
     console.log("displaySP")
@@ -164,6 +301,8 @@ let displayWAVE = () => {
 
 */
 
+/*
+//現在のと一つ前のlf0を表示
 var pre_lf0 //一つ前のlf0
 
 function displayLF0(lf0, mdur, mora){
@@ -278,3 +417,4 @@ function displayLF0(lf0, mdur, mora){
   pre_lf0 = lf0;
 
 }
+*/

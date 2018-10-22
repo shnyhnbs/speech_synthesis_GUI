@@ -931,6 +931,6 @@ async function synthesis (plab){
     displayHistory();
 
     displayFlatMlf0(parameters.dur, parameters.lab.plab);
-    displayLF0(parameters.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
+    displayLF0(syn_history.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
 
 }

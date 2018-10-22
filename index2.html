@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <title>TailorMadeSpeechSynthesis</title>
 
-<!--  <link href="./css/material-icons.css" rel="stylesheet"> -->
+ <link href="./css/material-icons.css" rel="stylesheet">
 <!--  <link rel="stylesheet" type="text/css" href="./css/materialize.min.css"> -->
   <link rel="stylesheet" type="text/css" href="css/main.css">
   <script>
@@ -64,13 +64,16 @@
             </form>
         </div>
 
-        <div id="button-box">
-            <button type="submit" id="text_submit" class="waves-effect waves-light btn">合成</button>
-            <button id="play" class="waves-effect waves-light btn">再生</button>
-            <button id="mod" class="waves-effect waves-light btn">韻律制御</button>
-            <button id="save" class="waves-effect waves-light btn" onclick={DownloadWave()}>保存</button>
-            <button id="save" class="waves-effect waves-light btn" onclick={DownloadFeats()}>特徴量保存</button>
-            <button id="manual" class="waves-effect waves-light btn">manual</button>
+        <div id="main-right-box">
+            <div id="button-box">
+                <button type="submit" id="text_submit" class="waves-effect waves-light btn">合成</button>
+                <button id="play" class="waves-effect waves-light btn">再生</button>
+                <button id="mod" class="waves-effect waves-light btn">韻律制御</button>
+                <button id="save" class="waves-effect waves-light btn" onclick={DownloadWave()}>保存</button>
+                <button id="save" class="waves-effect waves-light btn" onclick={DownloadFeats()}>特徴量保存</button>
+                <button id="manual" class="waves-effect waves-light btn">manual</button>
+            </div>
+            <div id="history-box"></div>
         </div>
 
     </div>
@@ -82,9 +85,6 @@
             </div>
         </div>
 
-        <div id="history-box">
-
-        </div>
 
     </div>
     <recording></recording>
@@ -388,7 +388,7 @@ window.onload = function(){
             addHistory(mod_parameters.lf0, 'lf0');
             displayHistory();
             loadMlf0(mod_parameters.mlf0);
-            displayLF0(mod_parameters.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
+            displayLF0(syn_history.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
 
             //GUI log
             $('#status').html("合成完了");
@@ -428,7 +428,7 @@ window.onload = function(){
 
         addHistory(mod_parameters.lf0, 'lf0');
         displayHistory();
-        displayLF0(mod_parameters.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
+        displayLF0(syn_history.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
 
             //GUI log
             $('#status').html("合成完了");

@@ -25,6 +25,8 @@ function displayFlatMlf0(dur, plab){
 
     //バー表示
     loadMlf0(mlf0);
+    mkBarCss(mdur);
+
 
     return 0;
 }
@@ -68,6 +70,22 @@ function mkBar(num, value, mora){
 
 }
 
+function mkBarCss(mdur){
+
+    let current = 0;
+    let sum = mdur.reduce((a,x) => a+=x,0); //継続長の和
+
+    for(let i = 0; i < mdur.length; i++){
+        let target = document.querySelectorAll('#slider-all')[i];
+        let position = (current + (mdur[i] / 2)) / sum * 100;
+        target.style.position = 'absolute';
+        target.style.left = position + '%';
+
+        current = current + mdur[i];
+    }
+
+    return 0;
+}
 
 /*
 function mkBar(num, value, mora){

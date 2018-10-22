@@ -34,12 +34,12 @@ function displayHistory(){
 
         let tmp_num = syn_history.lf0.length - 1
         let play_func = 'onclick={playAudioBuffer(syn_history.wav[' + tmp_num + '])}'
-        let graph_func = 'onclick={displayGraph(syn_history.lf0[' + tmp_num + '])}'
+        let graph_func = 'onclick={switchVisible(' + tmp_num + ')}'
         $(  '<div id="history">' +
-            '<button id="history-play" class="waves-effect waves-light btn"'
+            '<button id="history-play"'
             + play_func +
             '>play</button>' +
-            '<button id="history-graph" class="waves-effect waves-light btn"'
+            '<button id="history-graph"'
             + graph_func +
             '>graph</button>' +
             '<span id="history-date">' + window.date + '</span>' +

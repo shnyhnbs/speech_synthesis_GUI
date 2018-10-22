@@ -358,7 +358,7 @@ var synthesizeWav = function(param){
     };
 
     //ひとまずバッファーを保存
-    addHistory(myArrayBuffer, 'wav')
+    addHistory(myArrayBuffer, 'wav');
 
     source.buffer = myArrayBuffer;
 
@@ -928,6 +928,7 @@ async function synthesis (plab){
     //displayMlf0(parameters.lf0, parameters.dur, parameters.lab.plab);
 
     addHistory(parameters.lf0, 'lf0');
+    displayHistory();
 
     displayFlatMlf0(parameters.dur, parameters.lab.plab);
     displayLF0(parameters.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);

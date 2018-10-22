@@ -83,7 +83,7 @@
         </div>
 
         <div id="history-box">
-            <button id="test" class="waves-effect waves-light btn">aaa</button>
+
         </div>
 
     </div>
@@ -385,6 +385,8 @@ window.onload = function(){
 
             //バー表示
             //displayMlf0(mod_parameters.lf0, parameters.dur, parameters.lab.plab);
+            addHistory(mod_parameters.lf0, 'lf0');
+            displayHistory();
             loadMlf0(mod_parameters.mlf0);
             displayLF0(mod_parameters.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
 
@@ -420,19 +422,18 @@ window.onload = function(){
             splitDiff(value);
         }).then(()=>{
             synthesizeWav(mod_parameters);
+
         }).then(()=>{
         //    displayMlf0(mod_parameters.lf0, parameters.dur, parameters.lab.plab);
+
+        addHistory(mod_parameters.lf0, 'lf0');
+        displayHistory();
         displayLF0(mod_parameters.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
 
             //GUI log
             $('#status').html("合成完了");
         })
     }
-
-    document.getElementById('test').onclick = function (){
-        playHistory();
-    }
-
 
 /*
     document.getElementById('manual').onclick = function (){

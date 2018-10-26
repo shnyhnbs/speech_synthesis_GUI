@@ -21,20 +21,22 @@ function displayLF0(lf0, mdur, mora){
     chart: {
       zoomType: 'x',
       marginTop: 30,
-      marginBottom: 60,
+      marginBottom: 30,
       marginLeft: 0,
       marginRight: 0,
+      plotBackgroundColor: '#ffffff',
+      backgroundColor: '#eafff4',
     },
     xAxis:{
         gridLineWidth: 1,
         min:0,
-        title:{
+/*        title:{
             text: 'time [s]',
             style: {
                 fontSize: '18px'
             }
         },
-        plotBands:[{
+*/        plotBands:[{
             from:100,
             to:200,
             color:'#00FF00'
@@ -48,7 +50,7 @@ function displayLF0(lf0, mdur, mora){
                     return 0;
                 }
                 //return Highcharts.numberFormat(this.value / worldParameters.fs, 1, '.', ',');
-                return Highcharts.numberFormat( this.value / 200, 1, '.', ',');
+                return Highcharts.numberFormat( this.value / 200, 1, '.', ',') + 's';
             },
             style: {
                 fontSize: '18px'
@@ -114,7 +116,10 @@ function displayLF0(lf0, mdur, mora){
           color: i % 2 == 0 ? '#FFFFFF' : '#E0E0E0',
           label: {
               text: mora[i],
-              y:    -5
+              y:    -5,
+              style:{
+                  fontSize: '1.5em'
+              }
           }
       })
       currnt_frame = currnt_frame + mdur[i];

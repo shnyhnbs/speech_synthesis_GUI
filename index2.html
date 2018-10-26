@@ -388,6 +388,7 @@ window.onload = function(){
             addHistory(mod_parameters.lf0, 'lf0');
             displayHistory();
             loadMlf0(mod_parameters.mlf0);
+            mkBarCss(mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
             displayLF0(syn_history.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
 
             //GUI log

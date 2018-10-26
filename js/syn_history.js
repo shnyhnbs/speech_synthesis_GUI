@@ -58,13 +58,17 @@ function displayHistory(){
                          i == 3 ? '&#10105;' : '&#10106;' //4 : 5
 
             if(i == 0){
-                $(  '<span id="history-legend">'+
+                $(  '<span id="history-legend" style="color:' +
+                    color +
+                    '">' +
                     number +
                     '</span>'
                 ).prependTo(document.querySelectorAll('#history')[i]);
             }else{
                 document.querySelectorAll('#history-legend')[i].remove();
-                $(  '<span>'+
+                $(  '<span id="history-legend" style="color:' +
+                    color +
+                    '">' +
                     number +
                     '</span>'
                 ).prependTo(document.querySelectorAll('#history')[i]);

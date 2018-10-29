@@ -4,18 +4,18 @@
     <body>
         <div id="rec-main-box">
             <div id="click">
-                <input type="button" id="rec" value="録音開始" style="font-size: 1.2em;color: #028760;position: center;">
-                </div>
+                <!--    <button class="waves-effect waves-light btn" id="analyze">分析</button> -->
+                <!--    <button class="waves-effect waves-light btn" id="rec_syn">合成</button> -->
+                <!--    <button class="waves-effect waves-light btn" onclick="play()">音声確認</button> -->
+                <!--    <button class="waves-effect waves-light btn" id="rec_submit">送信</button> -->
+                <button id="rec" value="録音開始"　style="color: #028760;">録音開始</button>
+                <label>
+                    ファイル選択
+                    <input type="file" name="file" id="rec_file">
+                </label>
+                <button id="reflect" class="waves-effect waves-light btn">反映</button>
+            </div>
                 <div>
-                    <!--    <button class="waves-effect waves-light btn" id="analyze">分析</button> -->
-                    <!--    <button class="waves-effect waves-light btn" id="rec_syn">合成</button> -->
-                    <!--    <button class="waves-effect waves-light btn" onclick="play()">音声確認</button> -->
-                    <!--    <button class="waves-effect waves-light btn" id="rec_submit">送信</button> -->
-                    <button class="waves-effect waves-light btn" id="analyzeAll">分析</button>
-                    <input type="file" name="file" id="rec_file" style="margin: 0px;">
-
-                        <h3></h3>
-                        <ul id="recordingslist"></ul>
                 </div>
         </div>
     </body>
@@ -56,6 +56,12 @@ function rec_submit(){
         })
     .done(function(response) {
         window.rec_worldParameters.lab = response;
+
+        //barを変更
+        rec2mlf0(parameters.lab.plab, input, parameters.dur, parameters.lf0, window.rec_worldParameters.f0, window.rec_worldParameters.lab.mora_dur);
+        loadMlf0(mod_parameters.mlf0);
+        mkBarCss(mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
+
     })
     .fail(function() {
         $('#status').html('失敗しました');
@@ -119,7 +125,7 @@ jQuery('#click').on('click', "#rec", function() {
 //            rec_submit();
 //    };
 
-document.getElementById('analyzeAll').onclick = function (){
+document.getElementById('reflect').onclick = function (){
     analyzeAll();
 };
 

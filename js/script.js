@@ -934,3 +934,10 @@ async function synthesis (plab){
     displayLF0(syn_history.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
 
 }
+
+function resetHistory(){
+    //それぞれ空にする
+    window.syn_history.wav = [];
+    window.syn_history.lf0 = [];
+    $("#history-box").empty();
+}

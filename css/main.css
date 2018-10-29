@@ -52,9 +52,21 @@
     }
 
     #history-legend{
-        font-size: 2em;
+        font-size: 1.7em;
         margin-left: 2%;
         margin-right: 2%;
+    }
+
+    #history-play{
+        font-size: 1em;
+        color: #028760;
+        background-color: #FFFFFF;
+    }
+
+    #history-graph{
+        font-size: 1em;
+        color: #028760;
+        background-color: #FFFFFF;
     }
 
     #manual_container{
@@ -67,6 +79,21 @@
         display: flex;
         flex-direction:column;
     }
+
+    #text_submit{
+        font-size: 1.5em;
+        color: #028760;
+        background-color: #FFFFFF;
+        margin: 0.5% 1%;
+    }
+
+    #manual{
+        font-size: 1.5em;
+        color: #028760;
+        background-color: #FFFFFF;
+        margin: 0.5% 1%;
+    }
+
 
     #option-box{
         height: 5%;
@@ -85,7 +112,7 @@
 
     #lf0Bar {
         width: 100%;
-        min-height: 170px;
+        height: 100%;
         display :flex;
         align-items: flex-end;
         overflow: scroll;
@@ -99,14 +126,53 @@
         transform-origin: left center;
     }
 
+    #slider{
+        width: 80%;
+    }
+
     #slider-value{
         width: 28px;
         text-align: center;
-        display: inline-block;
+        /*display: inline-block;*/
+        display: none;
         -webkit-transform: rotate(90deg);
         transform: rotate(90deg);
     }
 
     #rec-main-box{
         height: 5%;
+    }
+
+    #reflect{
+        color: #028760;
+        background-color: #FFFFFF;
+        font-size: 1em;
+        margin: 0 3px;
+    }
+
+    #click{
+        display: flex;
+        align-items: center;
+    }
+
+    #click > label > input{
+        display: none;
+    }
+
+    #rec{
+        color: #028760;
+        background-color: #FFFFFF;
+        font-size: 1em;
+        margin: 0 3px;
+    }
+
+    #click > label{
+        font-size: 1em;
+        color: #028760;					/* ラベルテキストの色を指定する */
+        background-color: #FFFFFF;/* ラベルの背景色を指定する */
+        padding: 1px 6px 2px;					/* ラベルとテキスト間の余白を指定する */
+        border: 4px #AAAAAA;/* ラベルのボーダーを指定する */;
+        border-width: 2px;
+        border-style: outset;
+        margin: 0 3px;
     }

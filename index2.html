@@ -67,11 +67,10 @@
         <div id="main-right-box">
             <div id="button-box">
                 <button type="submit" id="text_submit" class="waves-effect waves-light btn">合成</button>
-                <button id="play" class="waves-effect waves-light btn">再生</button>
-                <button id="mod" class="waves-effect waves-light btn">韻律制御</button>
-                <button id="save" class="waves-effect waves-light btn" onclick={DownloadWave()}>保存</button>
-                <button id="save" class="waves-effect waves-light btn" onclick={DownloadFeats()}>特徴量保存</button>
-                <button id="manual" class="waves-effect waves-light btn">manual</button>
+                <!--<button id="mod" class="waves-effect waves-light btn">韻律制御</button>-->
+                <button id="manual" class="waves-effect waves-light btn">韻律制御</button>
+                <button id="save" class="waves-effect waves-light btn" onclick={DownloadWave()} hidden>保存</button>
+                <button id="save" class="waves-effect waves-light btn" onclick={DownloadFeats()} hidden>特徴量保存</button>
             </div>
             <div id="history-box"></div>
         </div>
@@ -92,12 +91,12 @@
         <div class="switch">
             <label>
                 分散補償
-                <input type="checkbox" id="vcomp">
+                <input type="checkbox" id="vcomp" checked="checked">
                 <span class="lever"></span>
             </label>
         </div>
 
-        <div class="switch">
+        <div class="switch" hidden>
             <label>
                 アクセント入力
                 <input type="checkbox" id="acc">
@@ -105,7 +104,7 @@
             </label>
         </div>
 
-        <div class="switch">
+        <div class="switch" hidden>
             <label>
                 継続長制御
                 <input type="checkbox" id="dur_bool">
@@ -134,7 +133,7 @@ window.diff_model = {};
 window.diff_model.scale = {};
 window.diff_model.vars = {};
 
-window.vcomp_bool = false; //分散補償の継続長を使うか否か
+window.vcomp_bool = true; //分散補償の継続長を使うか否か
 window.vcomp_bool_tmp = false; //一時的に分散補償の継続長を使うかのフラグ
 window.dur_bool = false; //音声入力の継続長を使うか否か
 window.speech_bool = false; //合成音声の修正を行ったか否か
@@ -293,6 +292,7 @@ $(document).ready(function() {
     .done(function(response) {
         window.parameters.lab = JSON.parse(response);
         console.dir(window.parameters.lab);
+        resetHistory();
         synthesis(window.parameters.lab.plab);
         //window.parameters.graphParamaters.next({is_initialize: true, data: parameters.lf0});
     })
@@ -358,12 +358,8 @@ window.onload = function(){
 
     }
 */
-    document.getElementById('play').onclick = function (){
-        source.start(0);
-    }
 
-
-
+/*
     document.getElementById('mod').onclick = function (){
         //GUI log
         window.speech_bool =true;
@@ -396,7 +392,7 @@ window.onload = function(){
 
         })
     }
-
+*/
     document.getElementById('manual').onclick = function (){
 
         let mflab;

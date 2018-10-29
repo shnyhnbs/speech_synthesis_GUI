@@ -45,6 +45,50 @@ function analyzeWav(buffer){
           rec_worldParameters = SPTK.SPTKWeb.GetSpeechFeaturesAsync(x_world, wavParameters.fs);
 }
 
+function rec2mlf0(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
+
+    //recf0 -> recLf0
+    let recLf0 = new Float32Array(recf0.length);
+    let shift_recLf0i = new Float32Array(recf0.length);
+    let synLf0i = new Float32Array(synLf0.length);
+
+    for(let i = 0; i < recf0.length; i++){
+        recLf0[i] = recf0[i] > 0 ? Math.log(recf0[i]) : -1e+10;
+    }
+
+
+    //録音音声の平均を合成音声と等しくなるようにシフト
+    let shift_recLf0 = shift_lf0(synLf0, recLf0);
+
+    //それぞれ無声区間を補完
+    shift_recLf0i = LF0Interinterpolate(shift_recLf0);
+    synLf0i = LF0Interinterpolate(synLf0);
+
+    //plab + dur -> mdur
+    //synLf0 + mdur -> mlf0
+    let syn_mdur = mkMora_dur(plab, syn_dur);
+    let syn_mlf0 = mora_avg(synLf0i, syn_mdur);
+
+    //recLf0 + 録音音声のmdur -> rec_mlf0
+    let rec_mlf0 = mora_avg(shift_recLf0i, rec_mdur);
+
+    //モーラごとの差分
+    let diff_mlf0 = new Float32Array(syn_mlf0.length);
+
+    for(let i = 0; i < syn_mlf0.length; i++){
+        diff_mlf0[i] = syn_mlf0[i] > 0 ? rec_mlf0[i] - syn_mlf0[i] : 0;
+    }
+
+    //平均0分散1に標準化
+    let std_mlf0 = standardization(diff_mlf0);
+    //let std_mlf0 = diff_mlf0;
+
+    mod_parameters.mlf0 = std_mlf0;
+
+    return 0;
+}
+
+
 // synthesize wav
 function rec_synthesizeWav(rec_param){
   var p1 = new Promise(function(resolve, reject){

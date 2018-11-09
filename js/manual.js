@@ -52,7 +52,7 @@ function mkBar(num, value, mora){
         ' mora=' + mora +
         ' value=' + value +
         ' data-default=' + value +
-        ' min="-5" max="5" step="0.01">' +
+        ' min="-3" max="3" step="0.01">' +
         ' <div>'
     ).appendTo('div#lf0Bar')
 
@@ -73,15 +73,32 @@ function mkBar(num, value, mora){
 function mkBarCss(mdur){
 
     let current = 0;
-    let sum = mdur.reduce((a,x) => a+=x,0); //継続長の和
+
+    let tmp_sum = mdur.reduce((a,x) => a+=x,0); //継続長の和
+    let sum = tmp_sum - (mdur[0]/2 + mdur.slice(-1)/2); //継続長の和 - (先頭sil/2 + 末尾sil/2)
+
 
     for(let i = 0; i < mdur.length; i++){
-        let target = document.querySelectorAll('#slider-all')[i];
-        let position = (current + (mdur[i] / 2)) / sum * 100;
-        target.style.position = 'absolute';
-        target.style.left = position + '%';
 
-        current = current + mdur[i];
+        let target = document.querySelectorAll('#slider-all')[i];
+
+        //最初と最後のsilは長さ半分に
+        if(i == 0 || i == mdur.length - 1){
+            let position = (current + (mdur[i] / 4)) / sum * 100;
+
+            target.style.position = 'absolute';
+            target.style.left = position + '%';
+
+            current = current + (mdur[i] / 2);
+
+        }else{
+            let position = (current + (mdur[i] / 2)) / sum * 100;
+
+            target.style.position = 'absolute';
+            target.style.left = position + '%';
+
+            current = current + mdur[i];
+        }
     }
 
     return 0;

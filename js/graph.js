@@ -7,6 +7,11 @@ function displayLF0(lf0, mdur, mora){
         pre_lf0 = null;
     }
 
+    //silの長さを半分にして表示するため
+    let sum = mdur.reduce((a,x) => a+=x,0); //継続長の和
+    let xAxis_min = mdur[0]/2;
+    let xAxis_max = sum - (mdur.slice(-1) / 2);
+
     //get max and min
     let max = 7;
     let min = 5;
@@ -15,7 +20,6 @@ function displayLF0(lf0, mdur, mora){
         max = lf0[i] > max ? lf0[i] : max;
         min = ( lf0[i] >0 && lf0[i] < min) ? lf0[i] : min;
     }
-    console.log(min,max);
 
     window.options = {
     chart: {
@@ -29,7 +33,8 @@ function displayLF0(lf0, mdur, mora){
     },
     xAxis:{
         gridLineWidth: 1,
-        min:0,
+        min:xAxis_min,
+        max:xAxis_max,
 /*        title:{
             text: 'time [s]',
             style: {
@@ -90,7 +95,7 @@ function displayLF0(lf0, mdur, mora){
 };
 
 
-    options.xAxis.max = mdur.reduce((a,x) => a+=x,0);
+    //options.xAxis.max = mdur.reduce((a,x) => a+=x,0);
 
     options.series = [];
     for(let i = lf0.length - 1; i >= 0; i--){//後ろから表示

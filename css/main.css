@@ -8,7 +8,7 @@
     }
 
     #main-box{
-        height: 45%;
+        height: 30%;
         display: flex;
     }
     #form{
@@ -33,7 +33,7 @@
 
     }
     #sub-box{
-        height: 45%;
+        height: 60%;
         display: flex;
     }
     #graph-box{
@@ -41,6 +41,12 @@
         width: 100%;
         align-items: center;
     }
+
+    #manual_container{
+        height: 100%;
+        width:100%
+    }
+
     #history-box{
         width: 100%;
         height: 100%;
@@ -69,10 +75,6 @@
         background-color: #FFFFFF;
     }
 
-    #manual_container{
-        height: 100%;
-        width:100%
-    }
     #button-box{
         height: 100%;
         width: 100%;
@@ -102,12 +104,12 @@
 
     #graph_container{
         width: 100%;
-        height: 50%;
+        height: 60%;
     }
 
     #manual_container{
         width: 100%;
-        height: 50%;
+        height: 40%;
     }
 
     #lf0Bar {
@@ -127,7 +129,7 @@
     }
 
     #slider{
-        width: 80%;
+        width: 70%;
     }
 
     #slider-value{

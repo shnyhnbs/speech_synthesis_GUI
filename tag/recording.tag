@@ -59,7 +59,7 @@ function rec_submit(){
 
         //barを変更
         rec2mlf0(parameters.lab.plab, input, parameters.dur, parameters.lf0, window.rec_worldParameters.f0, window.rec_worldParameters.lab.mora_dur);
-        loadMlf0(mod_parameters.mlf0);
+        loadMlf0(mod_parameters.mlf0, parameters.lab.mora);
         mkBarCss(mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
 
     })

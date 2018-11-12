@@ -395,6 +395,7 @@ function vcomp(feat, feat_dim, vcomp){
     return output;
 }
 
+//もう使ってない? 20181110
 function mkMflab(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
 
     //recf0 -> recLf0
@@ -408,7 +409,8 @@ function mkMflab(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
 
 
     //録音音声の平均を合成音声と等しくなるようにシフト
-    let shift_recLf0 = shift_lf0(synLf0, recLf0);
+    //synLf0, recLf0, mora, mdur
+    let shift_recLf0 = shift_lf0(synLf0, recLf0, parameters.lab.mora,mkMora_dur(parameters.lab.plab, parameters.dur));
 
     //それぞれ無声区間を補完
     shift_recLf0i = LF0Interinterpolate(shift_recLf0);
@@ -441,6 +443,7 @@ function mkMflab(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
     return mflab;
 }
 
+/*
 function flab2mflab(flab, std_mlf0, syn_mdur){
 
     let dim = 414; //あとで修正
@@ -503,6 +506,93 @@ function flab2mflab(flab, std_mlf0, syn_mdur){
     return mflab;
 
 }
+*/
+
+function flab2mflab(flab, std_mlf0, syn_mdur, mora){
+
+    let dim = 414; //あとで修正
+    let frame = flab.length / dim;
+    let currnt_frame = 0;
+
+    let mflab = new Float32Array((dim + 3) * frame); //先行、当該、後続の差分F0コンテキスト付与
+
+    //最初のモーラ
+    let pre_mlf0 = std_mlf0[1];
+    let current_mlf0 = std_mlf0[1];
+    let next_mlf0 = std_mlf0[1];
+
+    for(let j = 0; j < syn_mdur[0]; j++){
+        mflab.set(flab.slice(currnt_frame * dim, (currnt_frame + 1) * dim), currnt_frame * (dim + 3));
+
+        currnt_frame += 1;
+
+        mflab[currnt_frame * (dim + 3) - 3] = pre_mlf0;
+        mflab[currnt_frame * (dim + 3) - 2] = current_mlf0;
+        mflab[currnt_frame * (dim + 3) - 1] = next_mlf0;
+
+    }
+
+    //ループ
+    for (let i = 1; i < mora.length - 1; i++){
+
+        if(mora[i - 1] == 'sil' || mora[i - 1] == 'pau' || mora[i - 1] == 'cl'){
+            if(mora[i + 1] == 'sil' || mora[i + 1] == 'pau' || mora[i + 1] == 'cl'){ //先行+後続が無音
+                pre_mlf0 = std_mlf0[i];
+                current_mlf0 = std_mlf0[i];
+                next_mlf0 = std_mlf0[i];
+            }else{ //先行が無音
+                pre_mlf0 = std_mlf0[i];
+                current_mlf0 = std_mlf0[i];
+                next_mlf0 = std_mlf0[i + 1];
+            }
+        }else if(mora[i + 1] == 'sil' || mora[i + 1] == 'pau' || mora[i + 1] == 'cl'){ //後続が無音
+            pre_mlf0 = std_mlf0[i - 1];
+            current_mlf0 = std_mlf0[i];
+            next_mlf0 = std_mlf0[i];
+        }else if(mora[i] == 'sil' || mora[i] == 'pau' || mora[i] == 'cl'){ //自身が無音
+            pre_mlf0 = std_mlf0[i - 1];
+            current_mlf0 = (std_mlf0[i - 1] + std_mlf0[i + 1]) / 2;
+            next_mlf0 = std_mlf0[i + 1];
+        }else{
+            pre_mlf0 = std_mlf0[i - 1];
+            current_mlf0 = std_mlf0[i];
+            next_mlf0 = std_mlf0[i + 1];
+        }
+
+
+
+        for(let j = 0; j < syn_mdur[i]; j++){
+            mflab.set(flab.slice(currnt_frame * dim, (currnt_frame + 1) * dim), currnt_frame * (dim + 3));
+
+            currnt_frame += 1;
+
+            mflab[currnt_frame * (dim + 3) - 3] = pre_mlf0;
+            mflab[currnt_frame * (dim + 3) - 2] = current_mlf0;
+            mflab[currnt_frame * (dim + 3) - 1] = next_mlf0;
+
+        }
+
+    }
+
+    //最後のモーラ
+    for(let j = 0; j < syn_mdur[syn_mdur.length - 1]; j++){
+
+        pre_mlf0 = current_mlf0;
+        current_mlf0 = next_mlf0;//next_mlf0はそのまま
+
+        mflab.set(flab.slice(currnt_frame * dim, (currnt_frame + 1) * dim), currnt_frame * (dim + 3));
+
+        currnt_frame += 1;
+
+        mflab[currnt_frame * (dim + 3) - 3] = pre_mlf0;
+        mflab[currnt_frame * (dim + 3) - 2] = current_mlf0;
+        mflab[currnt_frame * (dim + 3) - 1] = next_mlf0;
+    }
+
+    return mflab;
+
+}
+
 
 function standardization(array){
 
@@ -593,34 +683,48 @@ function mkMora_dur(plab, dur){
 
 }
 
-//synLf0 + recLf0 -> shift_recLf0
-function shift_lf0(synLf0, recLf0){
+//synLf0 + recLf0 mora mdur -> shift_recLf0
+function shift_lf0(synLf0, recLf0 ,mora , syn_mdur, rec_mdur){
 
     let count = 0;
     let sum = 0;
+    let currnt_frame = 0;
 
     //合成音声のlf0の平均
-    for(let i = 0; i < synLf0.length; i++){
-        if(synLf0[i] > 0){
-            sum += synLf0[i];
-            count += 1;
+    for (let i = 0; i < mora.length; i++){
+        if(mora[i] == 'sil' || mora[i] == 'pau' || mora[i] == 'cl'){
+            currnt_frame += syn_mdur[i];
+        }else {
+            for(let j = 0; j < syn_mdur[i]; j++){
+                if(synLf0[currnt_frame + j] > 0){
+                    sum += synLf0[currnt_frame + j];
+                    count += 1;
+                    currnt_frame += 1;
+                }
+            }
         }
     }
-
     let synAvg = sum / count;
 
 
     count = 0;
     sum = 0;
+    currnt_frame = 0;
 
     //録音音声のlf0の平均
-    for(let i = 0; i < recLf0.length; i++){
-        if(recLf0[i] > 0){
-            sum += recLf0[i];
-            count += 1;
+    for (let i = 0; i < mora.length; i++){
+        if(mora[i] == 'sil' || mora[i] == 'pau' || mora[i] == 'cl'){
+            currnt_frame += rec_mdur[i];
+        }else {
+            for(let j = 0; j < rec_mdur[i]; j++){
+                if(recLf0[currnt_frame + j] > 0){
+                    sum += recLf0[currnt_frame + j];
+                    count += 1;
+                    currnt_frame += 1;
+                }
+            }
         }
     }
-
     let recAvg = sum / count;
 
     let diffAvg = synAvg - recAvg;
@@ -930,7 +1034,7 @@ async function synthesis (plab){
     addHistory(parameters.lf0, 'lf0');
     displayHistory();
 
-    displayFlatMlf0(parameters.dur, parameters.lab.plab);
+    displayFlatMlf0(parameters.dur, parameters.lab.plab, parameters.lab.mora);
     displayLF0(syn_history.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
 
 }

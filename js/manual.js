@@ -17,25 +17,25 @@ function displayMlf0(lf0, dur, plab){
 }
 
 //lf0 mdur -> lf0のモーラ平均をrangeで出力
-function displayFlatMlf0(dur, plab){
+function displayFlatMlf0(dur, plab, mora){
 
     //モーラ平均を求める
     let mdur = mkMora_dur(plab, dur);
     let mlf0 = new Float32Array(mdur.length);
 
     //バー表示
-    loadMlf0(mlf0);
-    mkBarCss(mdur);
+    loadMlf0(mlf0, mora);
+    mkBarCss(mdur, mora);
 
 
     return 0;
 }
 
-function loadMlf0(syn_mlf0){
+function loadMlf0(syn_mlf0, mora){
     resetBar();
 
     for(let i = 0; i < syn_mlf0.length; i++){
-        mkBar(i, syn_mlf0[i].toFixed(2), 'tmp');
+        mkBar(i, syn_mlf0[i].toFixed(2), mora[i]);
     }
     return 0;
 }
@@ -45,15 +45,16 @@ function resetBar(){
 }
 
 function mkBar(num, value, mora){
+
     $(  '<div id="slider-all">' +
         ' <span id="slider-value">' + value + '</span>' +
         ' <input type="range" id="slider"' +
         ' name=' + num +
-        ' mora=' + mora +
+        ' data-mora=' + mora +
         ' value=' + value +
         ' data-default=' + value +
-        ' min="-3" max="3" step="0.01">' +
-        ' <div>'
+        ' min="-1" max="1" step="0.01">' +
+        ' </div>'
     ).appendTo('div#lf0Bar')
 
     //値を表示
@@ -70,7 +71,7 @@ function mkBar(num, value, mora){
 
 }
 
-function mkBarCss(mdur){
+function mkBarCss(mdur, mora){
 
     let current = 0;
 
@@ -98,6 +99,12 @@ function mkBarCss(mdur){
             target.style.left = position + '%';
 
             current = current + mdur[i];
+        }
+
+        if(mora[i] == 'sil' || mora[i] == 'pau' || mora[i] == 'cl'){
+            target.style.visibility = 'hidden';
+        } else {
+            target.style.visibility = 'visible';
         }
     }
 
@@ -150,6 +157,7 @@ function getManual(){
     return mod_mlf0;
 }
 
+/*
 function mkMflabWithManual3(plab, flab, syn_dur, syn_mlf0){
 
     //手修正を結果を利用
@@ -169,7 +177,7 @@ function mkMflabWithManual3(plab, flab, syn_dur, syn_mlf0){
 
     return mflab;
 }
-
+*/
 function mkMflabWithManual2(plab, flab, syn_dur){
 
     //手修正を結果を利用
@@ -180,11 +188,11 @@ function mkMflabWithManual2(plab, flab, syn_dur){
     let syn_mdur = mkMora_dur(plab, syn_dur);
 
     //flab -> mkMflab
-    let mflab = flab2mflab(flab, manual_mlf0, syn_mdur);
+    let mflab = flab2mflab(flab, manual_mlf0, syn_mdur, parameters.lab.mora);
 
     return mflab;
 }
-
+/*
 function mkMflabWithManual(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
 
     //recf0 -> recLf0
@@ -240,3 +248,4 @@ function mkMflabWithManual(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
 
     return mflab;
 }
+*/

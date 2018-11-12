@@ -58,7 +58,8 @@ function rec2mlf0(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
 
 
     //録音音声の平均を合成音声と等しくなるようにシフト
-    let shift_recLf0 = shift_lf0(synLf0, recLf0);
+    //synLf0 recLf0 mora syn_mdur rec_mdur -> shift_recLf0
+    let shift_recLf0 = shift_lf0(synLf0, recLf0, parameters.lab.mora, mkMora_dur(parameters.lab.plab, parameters.dur), rec_mdur);
 
     //それぞれ無声区間を補完
     shift_recLf0i = LF0Interinterpolate(shift_recLf0);

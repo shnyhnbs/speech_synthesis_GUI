@@ -73,6 +73,15 @@ function mkBar(num, value, mora){
 
 function mkBarCss(mdur, mora){
 
+    //バーの長さの初期値を決定
+    let height = $('#lf0Bar').height();
+    console.log(height);
+    for (let i = 0; i < document.querySelectorAll('#slider-all').length; i++){
+        console.log(i);
+        document.querySelectorAll('#slider-all')[i].style.width = height + 'px';
+    }
+
+    //バーの位置を決定
     let current = 0;
 
     let tmp_sum = mdur.reduce((a,x) => a+=x,0); //継続長の和

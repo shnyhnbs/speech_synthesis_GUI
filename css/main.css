@@ -3,7 +3,7 @@
         margin: 5px;
         overflow: hidden;
     }
-    
+
     body{
         height: 100%;
         margin: 0;
@@ -132,7 +132,7 @@
     }
 
     #slider{
-        width: 70%;
+        width: 80%;
     }
 
     #slider-value{

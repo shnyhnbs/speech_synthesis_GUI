@@ -454,6 +454,14 @@ window.onload = function(){
 */
 }
 
+//バーの大きさを動的に変更
+$(window).on('load resize', function(){
+    let height = $('#lf0Bar').height();
+    for (let i = 0; i < document.querySelectorAll('#slider-all').length; i++){
+        document.querySelectorAll('#slider-all')[i].style.width = height + 'px';
+    }
+});
+
 </script>
 
 <!-- tags  -->

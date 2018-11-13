@@ -81,7 +81,8 @@ function rec2mlf0(plab, flab, syn_dur, synLf0, recf0, rec_mdur){
     }
 
     //平均0分散1に標準化
-    //let std_mlf0 = standardization(diff_mlf0);
+//    let std_mlf0 = standardization(diff_mlf0);
+//    let std_mlf0 = standardization_mora(diff_mlf0, parameters.lab.mora);//モーラの情報を利用
     let std_mlf0 = diff_mlf0;
 
     mod_parameters.mlf0 = std_mlf0;

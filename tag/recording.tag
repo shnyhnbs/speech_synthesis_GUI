@@ -101,6 +101,7 @@ this.on('mount', () => {
 jQuery('#click').on('click', "#rec", function() {
     if (this.value === "録音開始") {
         jQuery('#rec').replaceWith('<input type="button" id="rec" value="録音停止" style="color: #D30E1B;">');
+        recorder && recorder.clear();
         record();
     } else {
         jQuery('#rec').replaceWith('<input type="button" id="rec" value="録音開始" style="color: #028760;">');

@@ -593,6 +593,46 @@ function flab2mflab(flab, std_mlf0, syn_mdur, mora){
 
 }
 
+//mora情報を使って無音区間を用いない
+function standardization_mora(array, mora){
+
+    let sum = 0;
+    let sumsum = 0;
+    let count = 0;
+
+    //平均
+    for(let i = 0; i < array.length; i++){
+        if(mora[i] != 'sil' && mora[i] != 'pau' && mora[i] != 'cl'){
+            sum += array[i];
+            count++;
+        }
+    }
+
+    let avg = sum / count;
+
+    //分散
+    for(let i = 0; i < array.length; i++){
+        if(mora[i] != 'sil' && mora[i] != 'pau' && mora[i] != 'cl'){
+            sumsum += Math.pow(array[i] - avg, 2);
+        }
+    }
+
+    let varia = sumsum / count;
+
+    //標準化
+    let std_array = new Float32Array(array.length);
+
+    for(let i = 0; i < array.length; i++){
+        if(mora[i] != 'sil' && mora[i] != 'pau' && mora[i] != 'cl'){
+            std_array[i] = (array[i] - avg) / Math.sqrt(varia);
+        }else{
+            std_array[i] = 0
+        }
+    }
+    return std_array;
+
+}
+
 
 function standardization(array){
 

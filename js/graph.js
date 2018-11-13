@@ -12,6 +12,11 @@ function displayLF0(lf0, mdur, mora){
     let xAxis_min = mdur[0]/2;
     let xAxis_max = sum - (mdur.slice(-1) / 2);
 
+    //silなし
+//    let xAxis_min = mdur[0];
+//    let xAxis_max = sum - mdur.slice(-1);
+
+
     //get max and min
     let max = 7;
     let min = 5;

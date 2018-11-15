@@ -9,7 +9,7 @@
                 <!--    <button class="waves-effect waves-light btn" onclick="play()">音声確認</button> -->
                 <!--    <button class="waves-effect waves-light btn" id="rec_submit">送信</button> -->
                 <button id="rec" value="録音開始"　style="color: #028760;">録音開始</button>
-                <label>
+                <label hidden>
                     ファイル選択
                     <input type="file" name="file" id="rec_file">
                 </label>
@@ -30,21 +30,17 @@ window.rec_flag;
 window.rec_flag = false; //rec_flag == false ; use file;
 
 function rec_submit(){
-    event.preventDefault();
 
     let params =  SPTK.SPTKWeb.GetWavParameter(rec_wav); //fs, nbit, samples
     let arr = SPTK.SPTKWeb.GetWavFormForWorld(rec_wav, params.samples); //getInt16
 
+    let date = SetDate();
 
     let JSONdata = {
         qtype: 'record',
-        text: arr
+        text: arr,
+        date:date
     };
-
-    console.dir(arr);
-    console.dir(JSONdata);
-    console.dir(JSON.stringify(JSONdata))
-
 
     $.ajax({
         url: 'http://localhost:12121/cgi-bin/tailor/align.py',
@@ -61,6 +57,7 @@ function rec_submit(){
         rec2mlf0(parameters.lab.plab, input, parameters.dur, parameters.lf0, window.rec_worldParameters.f0, window.rec_worldParameters.lab.mora_dur);
         loadMlf0(mod_parameters.mlf0, parameters.lab.mora);
         mkBarCss(mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
+        $('.overlay').css('visibility','hidden'); //ロード画面を消す
 
     })
     .fail(function() {
@@ -127,7 +124,11 @@ jQuery('#click').on('click', "#rec", function() {
 //    };
 
 document.getElementById('reflect').onclick = function (){
-    analyzeAll();
+    $('.overlay').css('visibility','visible'); //ロード画面を表示
+    setTimeout(function(){//ロード画面を表示を優先するため
+            analyzeAll();
+            writeLog('reflect_speech', window.restart_date);
+        },1)
 };
 
 async function analyzeAll(){
@@ -147,6 +148,7 @@ async function analyzeAll(){
         reader = new FileReader();
         reader.readAsArrayBuffer(waveFile);
         window.rec_flag = false;
+        writeLog('use_wav_file', window.restart_date);
       }
       file.addEventListener('change', loadWavFile, false);
     } else {

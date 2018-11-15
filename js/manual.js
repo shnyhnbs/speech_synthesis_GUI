@@ -53,7 +53,7 @@ function mkBar(num, value, mora){
         ' data-mora=' + mora +
         ' value=' + value +
         ' data-default=' + value +
-        ' min="-1" max="1" step="0.01">' +
+        ' min="-0.5" max="0.5" step="0.01">' +
         ' </div>'
     ).appendTo('div#lf0Bar')
 
@@ -75,9 +75,7 @@ function mkBarCss(mdur, mora){
 
     //バーの長さの初期値を決定
     let height = $('#lf0Bar').height();
-    console.log(height);
     for (let i = 0; i < document.querySelectorAll('#slider-all').length; i++){
-        console.log(i);
         document.querySelectorAll('#slider-all')[i].style.width = height + 'px';
     }
 

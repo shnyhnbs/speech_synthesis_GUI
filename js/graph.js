@@ -17,14 +17,14 @@ function displayLF0(lf0, mdur, mora){
 //    let xAxis_max = sum - mdur.slice(-1);
 
 
-    //get max and min
-    let max = 7;
-    let min = 5;
+    //get max and min //決め打ち
+    let yAxis_max =1000;
+    let yAxis_min = 200;
 
-    for(let i = 0; i < lf0.length; i++){
-        max = lf0[i] > max ? lf0[i] : max;
-        min = ( lf0[i] >0 && lf0[i] < min) ? lf0[i] : min;
-    }
+//    for(let i = 0; i < lf0.length; i++){
+//        max = lf0[i] > max ? lf0[i] : max;
+//        min = ( lf0[i] >0 && lf0[i] < min) ? lf0[i] : min;
+//    }
 
     window.options = {
     chart: {
@@ -68,8 +68,9 @@ function displayLF0(lf0, mdur, mora){
         }
     },
     yAxis:{
-        max:max,
-        min:min,
+        type:'logarithmic', //対数軸
+        max:yAxis_max,
+        min:yAxis_min,
         title:{
             text:''
         },
@@ -104,9 +105,16 @@ function displayLF0(lf0, mdur, mora){
 
     options.series = [];
     for(let i = lf0.length - 1; i >= 0; i--){//後ろから表示
+
+        //lf0 -> f0
+        let tmp_f0 = new Float32Array(lf0[i].length);
+        for (let j = 0; j < tmp_f0.length; j++){
+            tmp_f0[j] = lf0[i][j] > 0 ? Math.exp(lf0[i][j]) : 1;
+        }
+
         options.series.unshift({
             name: 'lf0-' + i,
-            data: lf0[i],
+            data: tmp_f0,
             type: 'spline',
             visible:i >= lf0.length - 2 ? true : false,
             color:  i == lf0.length - 1 ? '#e74c3c' : //赤

@@ -15,7 +15,7 @@ function record(){
   recorder && recorder.record();
   console.log("recording")
   //GUI log
-  $('#status').html("録音中・・・");
+  writeLog('recording_begin', window.restart_date);
 
 }
 
@@ -24,8 +24,8 @@ function stop(){
   recorder && recorder.stop();
   console.log("stopped");
   window.rec_flag = true;
-  //GUI log
-  $('#status').html("録音完了");
+  //log
+  writeLog('recording_end', window.restart_date);
 
 //  createDownloadLink();
 //  downSampling();

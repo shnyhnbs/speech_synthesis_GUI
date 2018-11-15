@@ -359,6 +359,7 @@ var synthesizeWav = function(param){
 
     //ひとまずバッファーを保存
     addHistory(myArrayBuffer, 'wav');
+    //addHistory(out_buffer.wav, 'wavArray');
 
     source.buffer = myArrayBuffer;
 
@@ -889,15 +890,6 @@ function DownloadWave(e){
     let dataview = GetWaveFileFromBuffer(GetShortRangeFromAudioBuffer(output.wav));
     let blob = new Blob([dataview], { type: 'audio/wav' });
 
-//    let buffer = new ArrayBuffer(parameters.sp.length * 4);
-//    let view = new DataView(buffer);
-
-//    for (let i = 0; i < parameters.sp.length; i++) {
-//        let v = parameters.sp[i];
-//        view.setFloat32(i * 4, v, true);
-//    }
-//    let blob = new Blob([view]);
-
     let url = window.URL.createObjectURL(blob);
 
     let a = document.createElement('a');
@@ -908,57 +900,6 @@ function DownloadWave(e){
     document.body.removeChild(a);
 }
 
-//mcep, lf0, bap, durを一度に保存
-function DownloadFeats (){
-
-    SetDate();
-
-    if(speech_bool){
-        Save(mod_parameters.lf0, 'lf0', window.date);
-        Save(mod_parameters.mcep, 'mcep', window.date);
-        Save(mod_parameters.bap, 'bap', window.date);
-    //    let dur = new Float32Array(rec_worldParameters.lab.phone_dur);
-    //    Save(dur, 'dur', window.date);
-        Save(parameters.dur, 'dur', window.date);
-    }else{
-        Save(parameters.lf0, 'lf0', window.date);
-        Save(parameters.mcep, 'mcep', window.date);
-        Save(parameters.bap, 'bap', window.date);
-        Save(parameters.dur, 'dur', window.date);
-    }
-}
-
-//data(配列), feat(拡張子), name(ファイル名) を入力
-function Save(in_data, in_feat, in_name){
-    event.preventDefault();
-
-    let feat = in_feat;
-    let name = in_name;
-    let data = in_data;
-
-    let JSONdata = {
-        qtype: 'download',
-        feat: feat,
-        name: name,
-        data: data
-    };
-
-    $.ajax({
-        url: 'http://localhost:12121/cgi-bin/DownloadFeats/download.py',
-        type: 'post',
-        data: JSON.stringify(JSONdata),
-        contentType: 'application/JSON',
-        dataType : 'JSON',
-        charset: 'utf-8'
-        })
-    .done(function() {
-        console.log('Download is Success');
-    })
-    .fail(function() {
-        console.log('Download is Failed');
-    });
-
-}
 
 //consoleから特徴量をDLする用
 //DownloadWave
@@ -994,9 +935,9 @@ function SetDate(){
     let Minutes = DD.getMinutes();
     let Seconds = DD.getSeconds();
 
-    window.date = 1900 + Year + '-' + Month + '-' + Day + '-' + Hours + '-' + Minutes + '-' + Seconds;
-    console.log(window.date);
+    let date = 1900 + Year + '-' + Month + '-' + Day + '-' + Hours + '-' + Minutes + '-' + Seconds;
 
+    return date;
 }
 
 
@@ -1028,7 +969,6 @@ function GetWaveFileFromBuffer(wav_byte) {
         let v = wav_byte[i] | 0;
         view.setInt16(44 + i * 2, v, true);
     }
-    console.dir(buffer);
     return view;
 }
 
@@ -1071,12 +1011,15 @@ async function synthesis (plab){
 
     //displayMlf0(parameters.lf0, parameters.dur, parameters.lab.plab);
 
+    writeLog('text_to_speech', window.restart_date);
+    DownloadFeats();
     addHistory(parameters.lf0, 'lf0');
     displayHistory();
 
     displayFlatMlf0(parameters.dur, parameters.lab.plab, parameters.lab.mora);
     displayLF0(syn_history.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
 
+    is_synthesis = false;
 }
 
 function resetHistory(){

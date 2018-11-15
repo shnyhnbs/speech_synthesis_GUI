@@ -31,6 +31,7 @@
   <script src="./js/manual.js"></script>
   <script src="./js/graph.js"></script>
   <script src="./js/syn_history.js"></script>
+  <script src="./js/log.js"></script>
 
   <!-- to make graph  -->
   <script src="./js/highcharts.js"></script>
@@ -80,6 +81,8 @@
         <div id="graph-box">
             <div  id="graph_container"></div>
             <div id="manual_container">
+                <img class="overlay" id="background"></img>
+                <img class="overlay" id="animation" src='css/gif-load3.gif'></img>
                 <div id="lf0Bar"></div>
             </div>
         </div>
@@ -139,13 +142,15 @@ window.dur_bool = false; //音声入力の継続長を使うか否か
 window.speech_bool = false; //合成音声の修正を行ったか否か
 window.manual_bool = false; //手修正を行ったか否か
 window.acc_bool = false; //アクセントで入力するか否か
+window.is_synthesis = false; //合成中かどうか
 
 //logを表示するため
 window.syn_history = {};
 window.syn_history.wav = [];
+window.syn_history.wavArray = [];
 window.syn_history.lf0 = [];
 
-window.date; //特徴量出力の為の仮の名前
+window.restart_date;
 
 //audiocontext
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -269,6 +274,9 @@ function loadData(path, cate, conv) {
 $(document).ready(function() {
     document.getElementById('text_submit').onclick = (function() {
 
+    if (is_synthesis){return 0;}
+    is_synthesis = true;
+
     if(acc_bool){
         var qtype = 'accent';
     }else{
@@ -333,6 +341,10 @@ $(function(){
 
 
 window.onload = function(){
+
+    window.restart_date = SetDate();
+    writeLog('GUI_start', window.restart_date);
+
     loadScale('model/std/scale/feats.scale', 'feats'); //まとめたい
     loadScale('model/std/scale/dur.scale', 'dur');
     loadVars('model/std/vars-mcepd.bin', 'mcep');
@@ -395,9 +407,11 @@ window.onload = function(){
 */
     document.getElementById('manual').onclick = function (){
 
-        let mflab;
-
+        if (is_synthesis){return 0;}
+        is_synthesis = true;
         manual_bool = true;
+
+        let mflab;
         mflab = mkMflabWithManual2(parameters.lab.plab, input, parameters.dur);
 
 /*
@@ -423,12 +437,14 @@ window.onload = function(){
         }).then(()=>{
         //    displayMlf0(mod_parameters.lf0, parameters.dur, parameters.lab.plab);
 
+        writeLog('control_prosody', window.restart_date);
+        DownloadFeats();
         addHistory(mod_parameters.lf0, 'lf0');
         displayHistory();
         displayLF0(syn_history.lf0, mkMora_dur(parameters.lab.plab, parameters.dur), parameters.lab.mora);
 
-            //GUI log
-            $('#status').html("合成完了");
+        is_synthesis = false;
+
         })
     }
 

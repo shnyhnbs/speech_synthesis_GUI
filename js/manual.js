@@ -115,6 +115,8 @@ function mkBarCss(mdur, mora){
         }
     }
 
+    //$('<hr>').appendTo('div#lf0Bar')
+
     return 0;
 }
 
